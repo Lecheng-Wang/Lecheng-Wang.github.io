@@ -1,0 +1,1590 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正弦函数变化教学演示</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        header {
+            background: linear-gradient(90deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        .content {
+            display: flex;
+            flex-wrap: wrap;
+            padding: 20px;
+        }
+        .control-panel {
+            flex: 1;
+            min-width: 350px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-right: 20px;
+            margin-bottom: 20px;
+        }
+        .graph-container {
+            flex: 2;
+            min-width: 600px;
+            padding: 20px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+        }
+        .graph-wrapper {
+            position: relative;
+            width: 100%;
+            flex: 1;
+        }
+        #graph {
+            width: 100%;
+            height: 600px;
+            background: white;
+            border: 1px solid #eaecef;
+            border-radius: 8px;
+        }
+        .zoom-controls {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            z-index: 20;
+        }
+        .pan-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2px;
+            background: white;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            z-index: 20;
+        }
+        .zoom-btn, .pan-btn {
+            width: 40px;
+            height: 40px;
+            background: #4b6cb7;
+            color: white;
+            border: none;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .zoom-btn:hover, .pan-btn:hover {
+            background: #3a5998;
+        }
+        .reset-btn {
+            background: #e74c3c;
+        }
+        .reset-btn:hover {
+            background: #c0392b;
+        }
+        .function-display {
+            background: #eef2f7;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            text-align: center;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #2c3e50;
+            border-left: 4px solid #4b6cb7;
+        }
+        .features-panel {
+            flex: 1;
+            min-width: 350px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 10px;
+            margin-left: 20px;
+            margin-bottom: 20px;
+            max-height: 800px;
+            overflow-y: auto;
+        }
+        h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaecef;
+        }
+        .param-control {
+            margin-bottom: 25px;
+        }
+        .param-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+        .param-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.05rem;
+        }
+        .param-value {
+            font-weight: 600;
+            color: #4b6cb7;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #dde1e7;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4b6cb7;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        input[type="range"]::-webkit-slider-thumb:hover {
+            background: #3a5998;
+            transform: scale(1.1);
+        }
+        .features {
+            background: #eef2f7;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        .feature-item {
+            margin: 15px 0;
+            display: flex;
+        }
+        .feature-label {
+            font-weight: 700;
+            min-width: 120px;
+            color: #2c3e50;
+            font-size: 1.05rem;
+        }
+        .feature-value {
+            color: #4b6cb7;
+            flex: 1;
+            font-weight: 600;
+            font-size: 1.05rem;
+        }
+        .examples {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .example-btn {
+            padding: 10px;
+            background: #4b6cb7;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: center;
+        }
+        .example-btn:hover {
+            background: #3a5998;
+            transform: translateY(-2px);
+        }
+        .explanation {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+        .explanation h3 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .toggle-container {
+            display: flex;
+            margin-bottom: 15px;
+            background: #eef2f7;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .toggle-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background: #dde1e7;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .toggle-btn.active {
+            background: #4b6cb7;
+            color: white;
+        }
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+        .checkbox-container input {
+            margin-right: 10px;
+        }
+        .axis-toggle-container {
+            display: flex;
+            justify-content: center;
+            margin: 15px 0;
+        }
+        .axis-toggle-btn {
+            padding: 10px 20px;
+            background: #3498db;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+        .axis-toggle-btn:hover {
+            background: #2980b9;
+        }
+        footer {
+            text-align: center;
+            padding: 20px;
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            border-top: 1px solid #eaecef;
+            margin-top: 20px;
+        }
+        .feature-list {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-top: 5px;
+        }
+        .feature-list-item {
+            padding: 3px 0;
+            font-size: 0.9rem;
+        }
+        @media (max-width: 1200px) {
+            .content {
+                flex-direction: column;
+            }
+            .control-panel, .features-panel {
+                margin-right: 0;
+                margin-left: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>正弦函数变化教学演示</h1>
+            <div class="subtitle">通过交互式图形直观理解正弦函数的变化规律</div>
+            <div class="subtitle">制作人————@王乐成</div>
+        </header>
+        
+        <div class="content">
+            <div class="control-panel">
+                <div class="function-display" id="function-text">
+                    f(x) = sin(x)
+                </div>
+                
+                <h2>参数控制</h2>
+                
+                <div class="toggle-container">
+                    <button class="toggle-btn active" id="continuous-mode">连续滑动</button>
+                    <button class="toggle-btn" id="discrete-mode">离散滑动(π/2)</button>
+                </div>
+                
+                <div class="param-control">
+                    <div class="param-label">
+                        <span class="param-name">振幅 (A)</span>
+                        <span class="param-value" id="a-value">1</span>
+                    </div>
+                    <input type="range" id="a-slider" min="0.1" max="3" step="0.1" value="1">
+                </div>
+                
+                <div class="param-control">
+                    <div class="param-label">
+                        <span class="param-name">频率 (ω)</span>
+                        <span class="param-value" id="w-value">1</span>
+                    </div>
+                    <input type="range" id="w-slider" min="0.5" max="4" step="0.1" value="1">
+                </div>
+                
+                <div class="param-control">
+                    <div class="param-label">
+                        <span class="param-name">相位 (b)</span>
+                        <span class="param-value" id="b-value">0</span>
+                    </div>
+                    <input type="range" id="b-slider" min="-3.14" max="3.14" step="0.01" value="0">
+                </div>
+                
+                <div class="param-control">
+                    <div class="param-label">
+                        <span class="param-name">垂直位移 (C)</span>
+                        <span class="param-value" id="c-value">0</span>
+                    </div>
+                    <input type="range" id="c-slider" min="-2" max="2" step="0.1" value="0">
+                </div>
+                
+                <div class="param-control">
+                    <div class="param-label">
+                        <span class="param-name">当前 x 值</span>
+                        <span class="param-value" id="x-value">0</span>
+                    </div>
+                    <input type="range" id="x-slider" min="-6.28" max="6.28" step="0.01" value="0">
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-points" checked>
+                    <label for="show-points">显示当前点</label>
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-lines" checked>
+                    <label for="show-lines">显示坐标连线</label>
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-symmetry">
+                    <label for="show-symmetry">显示对称轴</label>
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-max-points">
+                    <label for="show-max-points">显示最大值点</label>
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-min-points">
+                    <label for="show-min-points">显示最小值点</label>
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-increasing">
+                    <label for="show-increasing">显示单调增区间</label>
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-decreasing">
+                    <label for="show-decreasing">显示单调减区间</label>
+                </div>
+                
+                <div class="checkbox-container">
+                    <input type="checkbox" id="show-x-intercepts">
+                    <label for="show-x-intercepts">显示与x轴交点</label>
+                </div>
+                
+                <div class="axis-toggle-container">
+                    <button class="axis-toggle-btn" id="toggle-axis-labels">隐藏坐标轴数值</button>
+                </div>
+                
+                <h2>示例函数</h2>
+                <div class="examples">
+                    <button class="example-btn" data-a="1" data-w="1" data-b="0" data-c="0">标准正弦</button>
+                    <button class="example-btn" data-a="2" data-w="1" data-b="0" data-c="0">振幅增大</button>
+                    <button class="example-btn" data-a="1" data-w="2" data-b="0" data-c="0">频率增大</button>
+                    <button class="example-btn" data-a="1" data-w="1" data-b="1.57" data-c="0">相位偏移</button>
+                    <button class="example-btn" data-a="1.5" data-w="3" data-b="0.78" data-c="0.5">组合变化</button>
+                </div>
+            </div>
+            
+            <div class="graph-container">
+                <h2>函数图像</h2>
+                <div class="graph-wrapper">
+                    <canvas id="graph"></canvas>
+                    <div class="pan-controls">
+                        <div></div>
+                        <button class="pan-btn" id="pan-up">↑</button>
+                        <div></div>
+                        <button class="pan-btn" id="pan-left">←</button>
+                        <button class="pan-btn reset-btn" id="reset-view">↺</button>
+                        <button class="pan-btn" id="pan-right">→</button>
+                        <div></div>
+                        <button class="pan-btn" id="pan-down">↓</button>
+                        <div></div>
+                    </div>
+                    <div class="zoom-controls">
+                        <button class="zoom-btn" id="zoom-in">+</button>
+                        <button class="zoom-btn" id="zoom-out">-</button>
+                    </div>
+                </div>
+                
+                <div class="explanation">
+                    <h3>正弦函数知识点</h3>
+                    <p>正弦函数的一般形式为：f(x) = A·sin(ωx + b) + C，其中A为振幅，ω为角频率，b为相位，C为垂直位移。</p>
+                    <p><strong>关键特征：</strong></p>
+                    <ul>
+                        <li><strong>振幅：</strong>决定波峰和波谷的高度，A>0时振幅为A</li>
+                        <li><strong>周期：</strong>函数重复的最小间隔，T = 2π/ω</li>
+                        <li><strong>频率：</strong>单位时间内周期重复的次数，f = ω/(2π)</li>
+                        <li><strong>相位：</strong>决定波形在x轴上的水平位移</li>
+                        <li><strong>垂直位移：</strong>决定整个波形在y轴方向上的平移</li>
+                        <li><strong>函数值范围：</strong>[C-A, C+A]</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="features-panel">
+                <h2>函数特征</h2>
+                <div class="features">
+                    <div class="feature-item">
+                        <span class="feature-label">当前点坐标:</span>
+                        <span class="feature-value" id="current-point">(0, 0)</span>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <span class="feature-label">振幅:</span>
+                        <span class="feature-value" id="amplitude">1</span>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <span class="feature-label">周期:</span>
+                        <span class="feature-value" id="period">2π ≈ 6.28</span>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <span class="feature-label">频率:</span>
+                        <span class="feature-value" id="frequency">1/(2π) ≈ 0.16</span>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <span class="feature-label">相位:</span>
+                        <span class="feature-value" id="phase">0</span>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <span class="feature-label">垂直位移:</span>
+                        <span class="feature-value" id="vertical-shift">0</span>
+                    </div>
+                    
+                    <div class"feature-item">
+                        <span class="feature-label">函数值范围:</span>
+                        <span class="feature-value" id="range">[-1, 1]</span>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <span class="feature-label">对称轴:</span>
+                        <div class="feature-value">
+                            <div id="symmetry-axes">x = π/2 + kπ (k为整数)</div>
+                            <div class="feature-list" id="symmetry-axes-list"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <span class="feature-label">最大值点:</span>
+                        <div class="feature-value">
+                            <div id="max-points">x = π/2 + 2kπ (k为整数)</div>
+                            <div class="feature-list" id="max-points-list"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <span class="feature-label">最小值点:</span>
+                        <div class="feature-value">
+                            <div id="min-points">x = 3π/2 + 2kπ (k为整数)</div>
+                            <div class="feature-list" id="min-points-list"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <span class="feature-label">单调增区间:</span>
+                        <div class="feature-value">
+                            <div id="increasing-intervals">[-π/2 + 2kπ, π/2 + 2kπ] (k为整数)</div>
+                            <div class="feature-list" id="increasing-intervals-list"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <span class="feature-label">单调减区间:</span>
+                        <div class="feature-value">
+                            <div id="decreasing-intervals">[π/2 + 2kπ, 3π/2 + 2kπ] (k为整数)</div>
+                            <div class="feature-list" id="decreasing-intervals-list"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <span class="feature-label">与x轴交点:</span>
+                        <div class="feature-value">
+                            <div id="x-intercepts">x = kπ (k为整数)</div>
+                            <div class="feature-list" id="x-intercepts-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>正弦函数变化教学演示工具 - 设计用于高中数学教学</p>
+        </footer>
+    </div>
+
+    <script>
+        // 获取DOM元素
+        const canvas = document.getElementById('graph');
+        const ctx = canvas.getContext('2d');
+        
+        const aSlider = document.getElementById('a-slider');
+        const wSlider = document.getElementById('w-slider');
+        const bSlider = document.getElementById('b-slider');
+        const cSlider = document.getElementById('c-slider');
+        const xSlider = document.getElementById('x-slider');
+        const showPoints = document.getElementById('show-points');
+        const showLines = document.getElementById('show-lines');
+        const showSymmetry = document.getElementById('show-symmetry');
+        const showMaxPoints = document.getElementById('show-max-points');
+        const showMinPoints = document.getElementById('show-min-points');
+        const showIncreasing = document.getElementById('show-increasing');
+        const showDecreasing = document.getElementById('show-decreasing');
+        const showXIntercepts = document.getElementById('show-x-intercepts');
+        const toggleAxisLabelsBtn = document.getElementById('toggle-axis-labels');
+        
+        const aValue = document.getElementById('a-value');
+        const wValue = document.getElementById('w-value');
+        const bValue = document.getElementById('b-value');
+        const cValue = document.getElementById('c-value');
+        const xValue = document.getElementById('x-value');
+        
+        const functionText = document.getElementById('function-text');
+        const currentPoint = document.getElementById('current-point');
+        const amplitude = document.getElementById('amplitude');
+        const period = document.getElementById('period');
+        const frequency = document.getElementById('frequency');
+        const phase = document.getElementById('phase');
+        const verticalShift = document.getElementById('vertical-shift');
+        const range = document.getElementById('range');
+        const symmetryAxes = document.getElementById('symmetry-axes');
+        const symmetryAxesList = document.getElementById('symmetry-axes-list');
+        const maxPoints = document.getElementById('max-points');
+        const maxPointsList = document.getElementById('max-points-list');
+        const minPoints = document.getElementById('min-points');
+        const minPointsList = document.getElementById('min-points-list');
+        const increasingIntervals = document.getElementById('increasing-intervals');
+        const increasingIntervalsList = document.getElementById('increasing-intervals-list');
+        const decreasingIntervals = document.getElementById('decreasing-intervals');
+        const decreasingIntervalsList = document.getElementById('decreasing-intervals-list');
+        const xIntercepts = document.getElementById('x-intercepts');
+        const xInterceptsList = document.getElementById('x-intercepts-list');
+        
+        const exampleButtons = document.querySelectorAll('.example-btn');
+        const continuousModeBtn = document.getElementById('continuous-mode');
+        const discreteModeBtn = document.getElementById('discrete-mode');
+        const zoomInBtn = document.getElementById('zoom-in');
+        const zoomOutBtn = document.getElementById('zoom-out');
+        const panUpBtn = document.getElementById('pan-up');
+        const panDownBtn = document.getElementById('pan-down');
+        const panLeftBtn = document.getElementById('pan-left');
+        const panRightBtn = document.getElementById('pan-right');
+        const resetViewBtn = document.getElementById('reset-view');
+        
+        // 缩放和移动状态
+        let zoomLevel = 1.0;
+        let offsetX = 0;
+        let offsetY = 0;
+        let isDragging = false;
+        let lastX, lastY;
+        let showAxisLabels = true;
+        let isDiscreteMode = false; // 默认连续模式
+        
+        // 设置canvas尺寸
+        function resizeCanvas() {
+            const container = canvas.parentElement;
+            canvas.width = container.clientWidth;
+            canvas.height = 600;
+            drawGraph();
+        }
+        
+        // 初始化
+        window.addEventListener('load', () => {
+            resizeCanvas();
+            updateFunction();
+            
+            // 添加鼠标事件监听器以实现拖动
+            canvas.addEventListener('mousedown', handleMouseDown);
+            canvas.addEventListener('mousemove', handleMouseMove);
+            canvas.addEventListener('mouseup', () => isDragging = false);
+            canvas.addEventListener('mouseleave', () => isDragging = false);
+            
+            // 添加缩放按钮事件
+            zoomInBtn.addEventListener('click', () => {
+                zoomLevel *= 1.2;
+                drawGraph();
+            });
+            
+            zoomOutBtn.addEventListener('click', () => {
+                zoomLevel /= 1.2;
+                drawGraph();
+            });
+            
+            // 添加移动按钮事件
+            panUpBtn.addEventListener('click', () => {
+                offsetY -= 2 / zoomLevel;
+                drawGraph();
+            });
+            
+            panDownBtn.addEventListener('click', () => {
+                offsetY += 2 / zoomLevel;
+                drawGraph();
+            });
+            
+            panLeftBtn.addEventListener('click', () => {
+                offsetX -= 2 / zoomLevel;
+                drawGraph();
+            });
+            
+            panRightBtn.addEventListener('click', () => {
+                offsetX += 2 / zoomLevel;
+                drawGraph();
+            });
+            
+            resetViewBtn.addEventListener('click', () => {
+                zoomLevel = 1.0;
+                offsetX = 0;
+                offsetY = 0;
+                drawGraph();
+            });
+            
+            // 坐标轴标签显示切换按钮
+            toggleAxisLabelsBtn.addEventListener('click', () => {
+                showAxisLabels = !showAxisLabels;
+                toggleAxisLabelsBtn.textContent = showAxisLabels ? 
+                    "隐藏坐标轴数值" : "显示坐标轴数值";
+                drawGraph();
+            });
+        });
+        
+        window.addEventListener('resize', resizeCanvas);
+        
+        // 鼠标事件处理函数
+        function handleMouseDown(e) {
+            isDragging = true;
+            lastX = e.clientX;
+            lastY = e.clientY;
+        }
+        
+        function handleMouseMove(e) {
+            if (!isDragging) return;
+            
+            const deltaX = e.clientX - lastX;
+            const deltaY = e.clientY - lastY;
+            
+            offsetX += deltaX / zoomLevel;
+            offsetY -= deltaY / zoomLevel;
+            
+            lastX = e.clientX;
+            lastY = e.clientY;
+            
+            drawGraph();
+        }
+        
+        // 切换连续/离散模式
+        continuousModeBtn.addEventListener('click', () => {
+            continuousModeBtn.classList.add('active');
+            discreteModeBtn.classList.remove('active');
+            isDiscreteMode = false;
+            
+            // 调整滑块步长
+            xSlider.step = 0.01;
+            bSlider.step = 0.01;
+            
+            updateSliders();
+            updateFunction();
+        });
+        
+        discreteModeBtn.addEventListener('click', () => {
+            discreteModeBtn.classList.add('active');
+            continuousModeBtn.classList.remove('active');
+            isDiscreteMode = true;
+            
+            // 调整滑块步长
+            xSlider.step = Math.PI / 2;
+            bSlider.step = Math.PI / 2;
+            
+            // 将当前值调整为π/2的倍数
+            let currentB = parseFloat(bSlider.value);
+            let newB = Math.round(currentB / (Math.PI/2)) * (Math.PI/2);
+            bSlider.value = newB;
+            
+            updateSliders();
+            updateFunction();
+        });
+        
+        // 将数值格式化为π的表达式
+        function formatAsPi(value) {
+            if (value === 0) return '0';
+            
+            const inPi = value / Math.PI;
+            const absInPi = Math.abs(inPi);
+            
+            // 如果值是π的整数倍
+            if (Math.abs(Math.round(inPi) - inPi) < 0.01) {
+                const intValue = Math.round(inPi);
+                if (intValue === 1) return 'π';
+                if (intValue === -1) return '-π';
+                return `${intValue}π`;
+            }
+            
+            // 如果值是π/2的整数倍
+            if (Math.abs(Math.round(inPi * 2) - inPi * 2) < 0.01) {
+                const numerator = Math.round(inPi * 2);
+                if (Math.abs(numerator) === 1) return `${numerator < 0 ? '-' : ''}π/2`;
+                return `${numerator}π/2`;
+            }
+            
+            // 如果值是π/4的整数倍
+            if (Math.abs(Math.round(inPi * 4) - inPi * 4) < 0.01) {
+                const numerator = Math.round(inPi * 4);
+                if (Math.abs(numerator) === 1) return `${numerator < 0 ? '-' : ''}π/4`;
+                return `${numerator}π/4`;
+            }
+            
+            // 否则返回小数形式
+            return value.toFixed(2);
+        }
+        
+        // 更新参数显示
+        function updateSliders() {
+            aValue.textContent = parseFloat(aSlider.value).toFixed(1);
+            wValue.textContent = parseFloat(wSlider.value).toFixed(1);
+            bValue.textContent = formatAsPi(parseFloat(bSlider.value));
+            cValue.textContent = parseFloat(cSlider.value).toFixed(1);
+            xValue.textContent = formatAsPi(parseFloat(xSlider.value));
+        }
+        
+        aSlider.addEventListener('input', () => {
+            updateSliders();
+            updateFunction();
+        });
+        
+        wSlider.addEventListener('input', () => {
+            updateSliders();
+            updateFunction();
+        });
+        
+        bSlider.addEventListener('input', () => {
+            if (isDiscreteMode) {
+                // 离散模式下，将值调整为π/2的倍数
+                let currentValue = parseFloat(bSlider.value);
+                let newValue = Math.round(currentValue / (Math.PI/2)) * (Math.PI/2);
+                bSlider.value = newValue;
+            }
+            updateSliders();
+            updateFunction();
+        });
+        
+        cSlider.addEventListener('input', () => {
+            updateSliders();
+            updateFunction();
+        });
+        
+        xSlider.addEventListener('input', () => {
+            updateSliders();
+            updateFunction();
+        });
+        
+        showPoints.addEventListener('change', () => {
+            updateFunction();
+        });
+        
+        showLines.addEventListener('change', () => {
+            updateFunction();
+        });
+        
+        showSymmetry.addEventListener('change', () => {
+            updateFunction();
+        });
+        
+        showMaxPoints.addEventListener('change', () => {
+            updateFunction();
+        });
+        
+        showMinPoints.addEventListener('change', () => {
+            updateFunction();
+        });
+        
+        showIncreasing.addEventListener('change', () => {
+            updateFunction();
+        });
+        
+        showDecreasing.addEventListener('change', () => {
+            updateFunction();
+        });
+        
+        showXIntercepts.addEventListener('change', () => {
+            updateFunction();
+        });
+        
+        // 示例按钮点击事件
+        exampleButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const a = parseFloat(button.getAttribute('data-a'));
+                const w = parseFloat(button.getAttribute('data-w'));
+                const b = parseFloat(button.getAttribute('data-b'));
+                const c = parseFloat(button.getAttribute('data-c'));
+                
+                aSlider.value = a;
+                wSlider.value = w;
+                bSlider.value = b;
+                cSlider.value = c;
+                
+                updateSliders();
+                updateFunction();
+            });
+        });
+        
+        // 更新函数和图形
+        function updateFunction() {
+            const a = parseFloat(aSlider.value);
+            const w = parseFloat(wSlider.value);
+            const b = parseFloat(bSlider.value);
+            const c = parseFloat(cSlider.value);
+            const x = parseFloat(xSlider.value);
+            
+            // 更新函数表达式显示
+            let functionExpression = 'f(x) = ';
+            if (a !== 1) functionExpression += a.toFixed(1);
+            functionExpression += 'sin(';
+            if (w !== 1) functionExpression += w.toFixed(1) + 'x';
+            else functionExpression += 'x';
+            
+            if (b !== 0) {
+                if (b > 0) functionExpression += ' + ';
+                else functionExpression += ' - ';
+                functionExpression += formatAsPi(Math.abs(b));
+            }
+            
+            functionExpression += ')';
+            
+            if (c !== 0) {
+                if (c > 0) functionExpression += ' + ';
+                else functionExpression += ' - ';
+                functionExpression += Math.abs(c).toFixed(1);
+            }
+            
+            functionText.textContent = functionExpression;
+            
+            // 计算函数特征
+            calculateFeatures(a, w, b, c, x);
+            
+            // 重绘图形
+            drawGraph();
+        }
+        
+        // 计算函数特征
+        function calculateFeatures(a, w, b, c, x) {
+            // 当前点坐标
+            const y = a * Math.sin(w * x + b) + c;
+            currentPoint.textContent = `(${formatAsPi(x)}, ${y.toFixed(2)})`;
+            
+            // 振幅
+            amplitude.textContent = a.toFixed(1);
+            
+            // 周期
+            const periodValue = 2 * Math.PI / w;
+            period.textContent = `${formatAsPi(periodValue)} ≈ ${periodValue.toFixed(2)}`;
+            
+            // 频率
+            const frequencyValue = w / (2 * Math.PI);
+            frequency.textContent = frequencyValue.toFixed(3);
+            
+            // 相位
+            phase.textContent = formatAsPi(b);
+            
+            // 垂直位移
+            verticalShift.textContent = c.toFixed(1);
+            
+            // 值域
+            range.textContent = `[${(c - a).toFixed(1)}, ${(c + a).toFixed(1)}]`;
+            
+            // 对称轴
+            if (w !== 0) {
+                symmetryAxes.textContent = `x = (π/2 - ${formatAsPi(b)})/${w.toFixed(1)} + kπ/${w.toFixed(1)} (k为整数)`;
+                
+                // 计算当前视图范围内的对称轴
+                const xMin = -2 * Math.PI / zoomLevel + offsetX;
+                const xMax = 2 * Math.PI / zoomLevel + offsetX;
+                symmetryAxesList.innerHTML = '';
+                
+                // 对称轴公式: x = (π/2 - b + kπ) / w
+                const kMin = Math.ceil((w * xMin - Math.PI/2 + b) / Math.PI);
+                const kMax = Math.floor((w * xMax - Math.PI/2 + b) / Math.PI);
+                
+                for (let k = kMin; k <= kMax; k++) {
+                    const axisX = (Math.PI/2 - b + k * Math.PI) / w;
+                    if (axisX >= xMin && axisX <= xMax) {
+                        const item = document.createElement('div');
+                        item.className = 'feature-list-item';
+                        item.textContent = `x = ${formatAsPi(axisX)}`;
+                        symmetryAxesList.appendChild(item);
+                    }
+                }
+            } else {
+                symmetryAxes.textContent = "无对称轴";
+                symmetryAxesList.innerHTML = '';
+            }
+            
+            // 最大值点
+            if (w !== 0) {
+                maxPoints.textContent = `x = (π/2 - ${formatAsPi(b)})/${w.toFixed(1)} + 2kπ/${w.toFixed(1)} (k为整数)`;
+                
+                // 计算当前视图范围内的最大值点
+                const xMin = -2 * Math.PI / zoomLevel + offsetX;
+                const xMax = 2 * Math.PI / zoomLevel + offsetX;
+                maxPointsList.innerHTML = '';
+                
+                // 最大值点公式: x = (π/2 - b + 2kπ) / w
+                const kMin = Math.ceil((w * xMin - Math.PI/2 + b) / (2 * Math.PI));
+                const kMax = Math.floor((w * xMax - Math.PI/2 + b) / (2 * Math.PI));
+                
+                for (let k = kMin; k <= kMax; k++) {
+                    const maxX = (Math.PI/2 - b + 2 * k * Math.PI) / w;
+                    if (maxX >= xMin && maxX <= xMax) {
+                        const maxY = a * Math.sin(w * maxX + b) + c;
+                        const item = document.createElement('div');
+                        item.className = 'feature-list-item';
+                        item.textContent = `(${formatAsPi(maxX)}, ${maxY.toFixed(2)})`;
+                        maxPointsList.appendChild(item);
+                    }
+                }
+            } else {
+                maxPoints.textContent = "无最大值点";
+                maxPointsList.innerHTML = '';
+            }
+            
+            // 最小值点
+            if (w !== 0) {
+                minPoints.textContent = `x = (3π/2 - ${formatAsPi(b)})/${w.toFixed(1)} + 2kπ/${w.toFixed(1)} (k为整数)`;
+                
+                // 计算当前视图范围内的最小值点
+                const xMin = -2 * Math.PI / zoomLevel + offsetX;
+                const xMax = 2 * Math.PI / zoomLevel + offsetX;
+                minPointsList.innerHTML = '';
+                
+                // 最小值点公式: x = (3π/2 - b + 2kπ) / w
+                const kMin = Math.ceil((w * xMin - 3*Math.PI/2 + b) / (2 * Math.PI));
+                const kMax = Math.floor((w * xMax - 3*Math.PI/2 + b) / (2 * Math.PI));
+                
+                for (let k = kMin; k <= kMax; k++) {
+                    const minX = (3*Math.PI/2 - b + 2 * k * Math.PI) / w;
+                    if (minX >= xMin && minX <= xMax) {
+                        const minY = a * Math.sin(w * minX + b) + c;
+                        const item = document.createElement('div');
+                        item.className = 'feature-list-item';
+                        item.textContent = `(${formatAsPi(minX)}, ${minY.toFixed(2)})`;
+                        minPointsList.appendChild(item);
+                    }
+                }
+            } else {
+                minPoints.textContent = "无最小值点";
+                minPointsList.innerHTML = '';
+            }
+            
+            // 单调增区间
+            if (w !== 0) {
+                increasingIntervals.textContent = `[(-π/2 - ${formatAsPi(b)})/${w.toFixed(1)} + 2kπ/${w.toFixed(1)}, (π/2 - ${formatAsPi(b)})/${w.toFixed(1)} + 2kπ/${w.toFixed(1)}] (k为整数)`;
+                
+                // 计算当前视图范围内的单调增区间
+                const xMin = -2 * Math.PI / zoomLevel + offsetX;
+                const xMax = 2 * Math.PI / zoomLevel + offsetX;
+                increasingIntervalsList.innerHTML = '';
+                
+                // 单调增区间公式: [(-π/2 - b + 2kπ)/w, (π/2 - b + 2kπ)/w]
+                const kMin = Math.ceil((w * xMin + Math.PI/2 + b) / (2 * Math.PI));
+                const kMax = Math.floor((w * xMax - Math.PI/2 + b) / (2 * Math.PI));
+                
+                for (let k = kMin; k <= kMax; k++) {
+                    const startX = (-Math.PI/2 - b + 2 * k * Math.PI) / w;
+                    const endX = (Math.PI/2 - b + 2 * k * Math.PI) / w;
+                    
+                    // 只显示在当前视图范围内的区间
+                    const visibleStart = Math.max(startX, xMin);
+                    const visibleEnd = Math.min(endX, xMax);
+                    
+                    if (visibleStart < visibleEnd) {
+                        const item = document.createElement('div');
+                        item.className = 'feature-list-item';
+                        item.textContent = `[${formatAsPi(visibleStart)}, ${formatAsPi(visibleEnd)}]`;
+                        increasingIntervalsList.appendChild(item);
+                    }
+                }
+            } else {
+                increasingIntervals.textContent = "无单调增区间";
+                increasingIntervalsList.innerHTML = '';
+            }
+            
+            // 单调减区间
+            if (w !== 0) {
+                decreasingIntervals.textContent = `[(π/2 - ${formatAsPi(b)})/${w.toFixed(1)} + 2kπ/${w.toFixed(1)}, (3π/2 - ${formatAsPi(b)})/${w.toFixed(1)} + 2kπ/${w.toFixed(1)}] (k为整数)`;
+                
+                // 计算当前视图范围内的单调减区间
+                const xMin = -2 * Math.PI / zoomLevel + offsetX;
+                const xMax = 2 * Math.PI / zoomLevel + offsetX;
+                decreasingIntervalsList.innerHTML = '';
+                
+                // 单调减区间公式: [(π/2 - b + 2kπ)/w, (3π/2 - b + 2kπ)/w]
+                const kMin = Math.ceil((w * xMin - Math.PI/2 + b) / (2 * Math.PI));
+                const kMax = Math.floor((w * xMax - 3*Math.PI/2 + b) / (2 * Math.PI));
+                
+                for (let k = kMin; k <= kMax; k++) {
+                    const startX = (Math.PI/2 - b + 2 * k * Math.PI) / w;
+                    const endX = (3*Math.PI/2 - b + 2 * k * Math.PI) / w;
+                    
+                    // 只显示在当前视图范围内的区间
+                    const visibleStart = Math.max(startX, xMin);
+                    const visibleEnd = Math.min(endX, xMax);
+                    
+                    if (visibleStart < visibleEnd) {
+                        const item = document.createElement('div');
+                        item.className = 'feature-list-item';
+                        item.textContent = `[${formatAsPi(visibleStart)}, ${formatAsPi(visibleEnd)}]`;
+                        decreasingIntervalsList.appendChild(item);
+                    }
+                }
+            } else {
+                decreasingIntervals.textContent = "无单调减区间";
+                decreasingIntervalsList.innerHTML = '';
+            }
+            
+            // 与x轴交点
+            if (w !== 0) {
+                xIntercepts.textContent = `x = (-${formatAsPi(b)} + kπ)/${w.toFixed(1)} (k为整数)`;
+                
+                // 计算当前视图范围内的与x轴交点
+                const xMin = -2 * Math.PI / zoomLevel + offsetX;
+                const xMax = 2 * Math.PI / zoomLevel + offsetX;
+                xInterceptsList.innerHTML = '';
+                
+                // 与x轴交点公式: x = (-b + kπ)/w
+                const kMin = Math.ceil((w * xMin + b) / Math.PI);
+                const kMax = Math.floor((w * xMax + b) / Math.PI);
+                
+                for (let k = kMin; k <= kMax; k++) {
+                    const interceptX = (-b + k * Math.PI) / w;
+                    if (interceptX >= xMin && interceptX <= xMax) {
+                        const item = document.createElement('div');
+                        item.className = 'feature-list-item';
+                        item.textContent = `(${formatAsPi(interceptX)}, 0)`;
+                        xInterceptsList.appendChild(item);
+                    }
+                }
+            } else {
+                xIntercepts.textContent = "无交点";
+                xInterceptsList.innerHTML = '';
+            }
+        }
+        
+        // 绘制函数图形
+        function drawGraph() {
+            const a = parseFloat(aSlider.value);
+            const w = parseFloat(wSlider.value);
+            const b = parseFloat(bSlider.value);
+            const c = parseFloat(cSlider.value);
+            const x = parseFloat(xSlider.value);
+            
+            // 清除画布
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 设置坐标系参数 - 应用缩放和偏移
+            const xMin = -2 * Math.PI / zoomLevel + offsetX;
+            const xMax = 2 * Math.PI / zoomLevel + offsetX;
+            const yMin = -3 / zoomLevel + offsetY;
+            const yMax = 3 / zoomLevel + offsetY;
+            
+            // 计算缩放
+            const xRange = xMax - xMin;
+            const yRange = yMax - yMin;
+            
+            const scaleX = canvas.width / xRange;
+            const scaleY = canvas.height / yRange;
+            
+            // 重新计算画布中的原点位置
+            const originX = -xMin * scaleX;
+            const originY = yMax * scaleY;
+            
+            // 绘制坐标轴
+            ctx.strokeStyle = '#666';
+            ctx.lineWidth = 2;
+            
+            // x轴 (固定在y=0的位置，不考虑垂直位移c)
+            ctx.beginPath();
+            ctx.moveTo(0, originY);
+            ctx.lineTo(canvas.width, originY);
+            ctx.stroke();
+            
+            // y轴
+            ctx.beginPath();
+            ctx.moveTo(originX, 0);
+            ctx.lineTo(originX, canvas.height);
+            ctx.stroke();
+            
+            // 绘制网格
+            ctx.strokeStyle = '#ddd';
+            ctx.lineWidth = 1;
+            
+            // 垂直网格线 (π/2间隔)
+            for (let gridX = Math.ceil(xMin / (Math.PI/2)) * (Math.PI/2); gridX <= Math.floor(xMax / (Math.PI/2)) * (Math.PI/2); gridX += Math.PI/2) {
+                if (Math.abs(gridX) < 0.01) continue; // 跳过0点
+                const pixelX = originX + gridX * scaleX;
+                ctx.beginPath();
+                ctx.moveTo(pixelX, 0);
+                ctx.lineTo(pixelX, canvas.height);
+                ctx.stroke();
+            }
+            
+            // 水平网格线
+            for (let gridY = Math.ceil(yMin); gridY <= Math.floor(yMax); gridY++) {
+                if (gridY === 0) continue;
+                const pixelY = originY - gridY * scaleY;
+                ctx.beginPath();
+                ctx.moveTo(0, pixelY);
+                ctx.lineTo(canvas.width, pixelY);
+                ctx.stroke();
+            }
+            
+            // 绘制刻度（根据设置决定是否显示数值）
+            if (showAxisLabels) {
+                ctx.fillStyle = '#333';
+                ctx.font = '14px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                
+                // x轴刻度 (π/2间隔)
+                for (let gridX = Math.ceil(xMin / (Math.PI/2)) * (Math.PI/2); gridX <= Math.floor(xMax / (Math.PI/2)) * (Math.PI/2); gridX += Math.PI/2) {
+                    if (Math.abs(gridX) < 0.01) continue; // 跳过0点
+                    const pixelX = originX + gridX * scaleX;
+                    ctx.beginPath();
+                    ctx.moveTo(pixelX, originY - 5);
+                    ctx.lineTo(pixelX, originY + 5);
+                    ctx.stroke();
+                    
+                    let label = formatAsPi(gridX);
+                    ctx.fillText(label, pixelX, originY + 8);
+                }
+                
+                // y轴刻度
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'middle';
+                for (let gridY = Math.ceil(yMin); gridY <= Math.floor(yMax); gridY++) {
+                    if (gridY === 0) continue;
+                    const pixelY = originY - gridY * scaleY;
+                    ctx.beginPath();
+                    ctx.moveTo(originX - 5, pixelY);
+                    ctx.lineTo(originX + 5, pixelY);
+                    ctx.stroke();
+                    ctx.fillText(gridY.toString(), originX - 8, pixelY);
+                }
+                
+                // 标记原点
+                ctx.textAlign = 'right';
+                ctx.textBaseline = 'top';
+                ctx.fillText('O', originX - 5, originY + 5);
+            }
+            
+            // 绘制函数图像
+            ctx.strokeStyle = '#4b6cb7';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            
+            for (let pixelX = 0; pixelX <= canvas.width; pixelX++) {
+                const graphX = (pixelX - originX) / scaleX;
+                const graphY = a * Math.sin(w * graphX + b) + c;
+                
+                const pixelY = originY - graphY * scaleY;
+                
+                if (pixelX === 0) {
+                    ctx.moveTo(pixelX, pixelY);
+                } else {
+                    ctx.lineTo(pixelX, pixelY);
+                }
+            }
+            
+            ctx.stroke();
+            
+            // 在图像上显示函数表达式
+            ctx.fillStyle = '#4b6cb7';
+            ctx.font = '18px Arial';
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'top';
+            let functionExpression = 'y = ';
+            if (a !== 1) functionExpression += a.toFixed(1);
+            functionExpression += 'sin(';
+            if (w !== 1) functionExpression += w.toFixed(1) + 'x';
+            else functionExpression += 'x';
+            
+            if (b !== 0) {
+                if (b > 0) functionExpression += ' + ';
+                else functionExpression += ' - ';
+                functionExpression += formatAsPi(Math.abs(b));
+            }
+            
+            functionExpression += ')';
+            
+            if (c !== 0) {
+                if (c > 0) functionExpression += ' + ';
+                else functionExpression += ' - ';
+                functionExpression += Math.abs(c).toFixed(1);
+            }
+            
+            ctx.fillText(functionExpression, 20, 20);
+            
+            // 绘制对称轴（使用黑色虚线）
+            if (showSymmetry.checked && w !== 0) {
+                ctx.strokeStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([5, 5]);
+                
+                const xMin = -2 * Math.PI / zoomLevel + offsetX;
+                const xMax = 2 * Math.PI / zoomLevel + offsetX;
+                
+                // 对称轴公式: x = (π/2 - b + kπ) / w
+                const kMin = Math.ceil((w * xMin - Math.PI/2 + b) / Math.PI);
+                const kMax = Math.floor((w * xMax - Math.PI/2 + b) / Math.PI);
+                
+                for (let k = kMin; k <= kMax; k++) {
+                    const axisX = (Math.PI/2 - b + k * Math.PI) / w;
+                    if (axisX >= xMin && axisX <= xMax) {
+                        const pixelX = originX + axisX * scaleX;
+                        ctx.beginPath();
+                        ctx.moveTo(pixelX, 0);
+                        ctx.lineTo(pixelX, canvas.height);
+                        ctx.stroke();
+                        
+                        // 标记对称轴方程
+                        ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
+                        ctx.font = '14px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        ctx.fillText(`x=${formatAsPi(axisX)}`, pixelX, 20);
+                    }
+                }
+                
+                ctx.setLineDash([]);
+            }
+            
+            // 绘制最大值点
+            if (showMaxPoints.checked && w !== 0) {
+                ctx.fillStyle = 'rgba(231, 76, 60, 0.8)';
+                
+                const xMin = -2 * Math.PI / zoomLevel + offsetX;
+                const xMax = 2 * Math.PI / zoomLevel + offsetX;
+                
+                // 最大值点公式: x = (π/2 - b + 2kπ) / w
+                const kMin = Math.ceil((w * xMin - Math.PI/2 + b) / (2 * Math.PI));
+                const kMax = Math.floor((w * xMax - Math.PI/2 + b) / (2 * Math.PI));
+                
+                for (let k = kMin; k <= kMax; k++) {
+                    const maxX = (Math.PI/2 - b + 2 * k * Math.PI) / w;
+                    if (maxX >= xMin && maxX <= xMax) {
+                        const maxY = a * Math.sin(w * maxX + b) + c;
+                        const pixelX = originX + maxX * scaleX;
+                        const pixelY = originY - maxY * scaleY;
+                        
+                        ctx.beginPath();
+                        ctx.arc(pixelX, pixelY, 5, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        // 标记最大值点
+                        ctx.fillStyle = 'rgba(231, 76, 60, 0.9)';
+                        ctx.font = '12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        ctx.fillText(`最大值`, pixelX, pixelY - 10);
+                    }
+                }
+            }
+            
+            // 绘制最小值点
+            if (showMinPoints.checked && w !== 0) {
+                ctx.fillStyle = 'rgba(52, 152, 219, 0.8)';
+                
+                const xMin = -2 * Math.PI / zoomLevel + offsetX;
+                const xMax = 2 * Math.PI / zoomLevel + offsetX;
+                
+                // 最小值点公式: x = (3π/2 - b + 2kπ) / w
+                const kMin = Math.ceil((w * xMin - 3*Math.PI/2 + b) / (2 * Math.PI));
+                const kMax = Math.floor((w * xMax - 3*Math.PI/2 + b) / (2 * Math.PI));
+                
+                for (let k = kMin; k <= kMax; k++) {
+                    const minX = (3*Math.PI/2 - b + 2 * k * Math.PI) / w;
+                    if (minX >= xMin && minX <= xMax) {
+                        const minY = a * Math.sin(w * minX + b) + c;
+                        const pixelX = originX + minX * scaleX;
+                        const pixelY = originY - minY * scaleY;
+                        
+                        ctx.beginPath();
+                        ctx.arc(pixelX, pixelY, 5, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        // 标记最小值点
+                        ctx.fillStyle = 'rgba(52, 152, 219, 0.9)';
+                        ctx.font = '12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'top';
+                        ctx.fillText(`最小值`, pixelX, pixelY + 10);
+                    }
+                }
+            }
+            
+            // 绘制单调增区间
+            if (showIncreasing.checked && w !== 0) {
+                ctx.strokeStyle = 'rgba(46, 204, 113, 0.5)';
+                ctx.lineWidth = 4;
+                
+                const xMin = -2 * Math.PI / zoomLevel + offsetX;
+                const xMax = 2 * Math.PI / zoomLevel + offsetX;
+                
+                // 单调增区间公式: [(-π/2 - b + 2kπ)/w, (π/2 - b + 2kπ)/w]
+                const kMin = Math.ceil((w * xMin + Math.PI/2 + b) / (2 * Math.PI));
+                const kMax = Math.floor((w * xMax - Math.PI/2 + b) / (2 * Math.PI));
+                
+                for (let k = kMin; k <= kMax; k++) {
+                    const startX = (-Math.PI/2 - b + 2 * k * Math.PI) / w;
+                    const endX = (Math.PI/2 - b + 2 * k * Math.PI) / w;
+                    
+                    // 只绘制在当前视图范围内的区间
+                    const visibleStart = Math.max(startX, xMin);
+                    const visibleEnd = Math.min(endX, xMax);
+                    
+                    if (visibleStart < visibleEnd) {
+                        const startPixelX = originX + visibleStart * scaleX;
+                        const endPixelX = originX + visibleEnd * scaleX;
+                        
+                        ctx.beginPath();
+                        
+                        // 绘制增区间的高亮曲线
+                        for (let pixelX = startPixelX; pixelX <= endPixelX; pixelX++) {
+                            const graphX = (pixelX - originX) / scaleX;
+                            const graphY = a * Math.sin(w * graphX + b) + c;
+                            const pixelY = originY - graphY * scaleY;
+                            
+                            if (pixelX === startPixelX) {
+                                ctx.moveTo(pixelX, pixelY);
+                            } else {
+                                ctx.lineTo(pixelX, pixelY);
+                            }
+                        }
+                        
+                        ctx.stroke();
+                        
+                        // 标记区间端点
+                        ctx.fillStyle = 'rgba(46, 204, 113, 0.8)';
+                        ctx.beginPath();
+                        ctx.arc(startPixelX, originY - (a * Math.sin(w * visibleStart + b) + c) * scaleY, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        ctx.beginPath();
+                        ctx.arc(endPixelX, originY - (a * Math.sin(w * visibleEnd + b) + c) * scaleY, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        // 标记区间范围
+                        ctx.fillStyle = 'rgba(46, 204, 113, 0.9)';
+                        ctx.font = '12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        ctx.fillText(`[${visibleStart.toFixed(2)}`, startPixelX, originY - c * scaleY + 20);
+                        ctx.fillText(`${visibleEnd.toFixed(2)}]`, endPixelX, originY - c * scaleY + 20);
+                    }
+                }
+            }
+            
+            // 绘制单调减区间
+            if (showDecreasing.checked && w !== 0) {
+                ctx.strokeStyle = 'rgba(231, 76, 60, 0.5)';
+                ctx.lineWidth = 4;
+                
+                const xMin = -2 * Math.PI / zoomLevel + offsetX;
+                const xMax = 2 * Math.PI / zoomLevel + offsetX;
+                
+                // 单调减区间公式: [(π/2 - b + 2kπ)/w, (3π/2 - b + 2kπ)/w]
+                const kMin = Math.ceil((w * xMin - Math.PI/2 + b) / (2 * Math.PI));
+                const kMax = Math.floor((w * xMax - 3*Math.PI/2 + b) / (2 * Math.PI));
+                
+                for (let k = kMin; k <= kMax; k++) {
+                    const startX = (Math.PI/2 - b + 2 * k * Math.PI) / w;
+                    const endX = (3*Math.PI/2 - b + 2 * k * Math.PI) / w;
+                    
+                    // 只绘制在当前视图范围内的区间
+                    const visibleStart = Math.max(startX, xMin);
+                    const visibleEnd = Math.min(endX, xMax);
+                    
+                    if (visibleStart < visibleEnd) {
+                        const startPixelX = originX + visibleStart * scaleX;
+                        const endPixelX = originX + visibleEnd * scaleX;
+                        
+                        ctx.beginPath();
+                        
+                        // 绘制减区间的高亮曲线
+                        for (let pixelX = startPixelX; pixelX <= endPixelX; pixelX++) {
+                            const graphX = (pixelX - originX) / scaleX;
+                            const graphY = a * Math.sin(w * graphX + b) + c;
+                            const pixelY = originY - graphY * scaleY;
+                            
+                            if (pixelX === startPixelX) {
+                                ctx.moveTo(pixelX, pixelY);
+                            } else {
+                                ctx.lineTo(pixelX, pixelY);
+                            }
+                        }
+                        
+                        ctx.stroke();
+                        
+                        // 标记区间端点
+                        ctx.fillStyle = 'rgba(231, 76, 60, 0.8)';
+                        ctx.beginPath();
+                        ctx.arc(startPixelX, originY - (a * Math.sin(w * visibleStart + b) + c) * scaleY, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        ctx.beginPath();
+                        ctx.arc(endPixelX, originY - (a * Math.sin(w * visibleEnd + b) + c) * scaleY, 4, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        // 标记区间范围
+                        ctx.fillStyle = 'rgba(231, 76, 60, 0.9)';
+                        ctx.font = '12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'top';
+                        ctx.fillText(`[${visibleStart.toFixed(2)}`, startPixelX, originY - c * scaleY - 20);
+                        ctx.fillText(`${visibleEnd.toFixed(2)}]`, endPixelX, originY - c * scaleY - 20);
+                    }
+                }
+            }
+            
+            // 绘制与x轴交点
+            if (showXIntercepts.checked && w !== 0) {
+                ctx.fillStyle = 'rgba(155, 89, 182, 0.8)';
+                
+                const xMin = -2 * Math.PI / zoomLevel + offsetX;
+                const xMax = 2 * Math.PI / zoomLevel + offsetX;
+                
+                // 与x轴交点公式: x = (-b + kπ)/w
+                const kMin = Math.ceil((w * xMin + b) / Math.PI);
+                const kMax = Math.floor((w * xMax + b) / Math.PI);
+                
+                for (let k = kMin; k <= kMax; k++) {
+                    const interceptX = (-b + k * Math.PI) / w;
+                    if (interceptX >= xMin && interceptX <= xMax) {
+                        const pixelX = originX + interceptX * scaleX;
+                        const pixelY = originY - c * scaleY; // y=0的点，但考虑垂直位移c
+                        
+                        ctx.beginPath();
+                        ctx.arc(pixelX, pixelY, 5, 0, Math.PI * 2);
+                        ctx.fill();
+                        
+                        // 标记交点
+                        ctx.fillStyle = 'rgba(155, 89, 182, 0.9)';
+                        ctx.font = '12px Arial';
+                        ctx.textAlign = 'center';
+                        ctx.textBaseline = 'bottom';
+                        ctx.fillText(`零点`, pixelX, pixelY - 10);
+                    }
+                }
+            }
+            
+            // 标记当前点
+            if (showPoints.checked) {
+                const currentY = a * Math.sin(w * x + b) + c;
+                const pixelX = originX + x * scaleX;
+                const pixelY = originY - currentY * scaleY;
+                
+                // 绘制当前点
+                ctx.fillStyle = '#e74c3c';
+                ctx.beginPath();
+                ctx.arc(pixelX, pixelY, 6, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 标记坐标
+                ctx.fillStyle = '#e74c3c';
+                ctx.font = '16px Arial';
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'bottom';
+                ctx.fillText(`(${x.toFixed(2)}, ${currentY.toFixed(2)})`, pixelX, pixelY - 10);
+                
+                // 绘制到坐标轴的连线
+                if (showLines.checked) {
+                    // 到x轴的连线
+                    ctx.strokeStyle = 'rgba(231, 76, 60, 0.5)';
+                    ctx.lineWidth = 2;
+                    ctx.beginPath();
+                    ctx.moveTo(pixelX, pixelY);
+                    ctx.lineTo(pixelX, originY - c * scaleY);
+                    ctx.stroke();
+                    
+                    // 到y轴的连线
+                    ctx.beginPath();
+                    ctx.moveTo(pixelX, pixelY);
+                    ctx.lineTo(originX, pixelY);
+                    ctx.stroke();
+                    
+                    // 标记x轴上的点
+                    ctx.fillStyle = 'rgba(231, 76, 60, 0.7)';
+                    ctx.beginPath();
+                    ctx.arc(pixelX, originY - c * scaleY, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 标记y轴上的点
+                    ctx.beginPath();
+                    ctx.arc(originX, pixelY, 4, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 在坐标轴上标记数值
+                    ctx.fillStyle = '#e74c3c';
+                    ctx.font = '14px Arial';
+                    
+                    // x轴上的数值
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    ctx.fillText(`x = ${x.toFixed(2)}`, pixelX, originY - c * scaleY + 10);
+                    
+                    // y轴上的数值
+                    ctx.textAlign = 'right';
+                    ctx.textBaseline = 'middle';
+                    ctx.fillText(`y = ${currentY.toFixed(2)}`, originX - 10, pixelY);
+                }
+            }
+        }
+    </script>
+</body>
+</html>
