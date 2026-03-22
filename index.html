@@ -121,7 +121,7 @@
             box-shadow: 0 0 12px rgba(0, 204, 255, 0.5);
         }
 
-        /* 主区域 - 居中两个按钮 */
+        /* 主区域 - 居中三个按钮 */
         .main-content {
             flex: 1;
             display: flex;
@@ -131,7 +131,7 @@
             padding: 2rem 1.5rem;
         }
 
-        /* 标题副标题区域 突出教师辅助工具定位 */
+        /* 标题副标题区域 突出教师辅助工具定位，并提示扩展更多 */
         .hero-text {
             text-align: center;
             margin-bottom: 3rem;
@@ -160,15 +160,17 @@
             font-weight: 400;
         }
 
-        /* 双按钮容器 (横排，严格并排，不换行) */
+        /* 三按钮容器 - 横排并列，小屏自动换行保持美观 */
         .button-group {
             display: flex;
             flex-direction: row;
             justify-content: center;
-            align-items: center;
-            gap: 2.5rem;
-            flex-wrap: nowrap;   /* 确保始终横排，不折行 */
+            align-items: stretch;
+            gap: 2rem;
+            flex-wrap: wrap;
             margin: 1rem 0;
+            max-width: 1200px;
+            width: 100%;
         }
 
         /* 按钮卡片样式 (矩形科技感) */
@@ -181,13 +183,29 @@
             background: rgba(20, 30, 55, 0.65);
             backdrop-filter: blur(12px);
             border-radius: 24px;
-            padding: 1.5rem 2.2rem;
-            min-width: 240px;
+            padding: 1.5rem 1.8rem;
+            min-width: 210px;
+            flex: 0 1 auto;
             transition: all 0.3s cubic-bezier(0.2, 0.9, 0.4, 1.1);
             border: 1px solid rgba(0, 180, 255, 0.3);
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3), 0 0 0 0 rgba(0, 180, 255, 0);
             text-align: center;
             cursor: pointer;
+        }
+
+        /* 针对第三个占位按钮的微调，保持风格一致但加一点柔和提示 */
+        .tool-btn.coming-soon {
+            cursor: pointer;
+            border-style: solid;
+            background: rgba(15, 25, 45, 0.6);
+            border-color: rgba(0, 180, 255, 0.5);
+        }
+        
+        .tool-btn.coming-soon:hover {
+            background: rgba(35, 55, 85, 0.8);
+            border-color: #6cf;
+            box-shadow: 0 25px 40px rgba(0, 0, 0, 0.4), 0 0 12px rgba(100, 200, 255, 0.3);
+            transform: translateY(-6px) scale(1.01);
         }
 
         /* 按钮内主要文字 */
@@ -212,8 +230,8 @@
             width: 100%;
         }
 
-        /* 悬浮动效 */
-        .tool-btn:hover {
+        /* 悬浮动效（普通按钮） */
+        .tool-btn:not(.coming-soon):hover {
             transform: translateY(-8px) scale(1.02);
             background: rgba(30, 50, 85, 0.85);
             border-color: #0cf;
@@ -235,6 +253,8 @@
             font-weight: 300;
             letter-spacing: 4px;
             color: #58b9ff;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         /* 底部作者信息栏 */
@@ -274,33 +294,71 @@
             border-left: 2px solid #0cf;
         }
 
-        /* 响应式：保持按钮横排，但缩放比例以适应小屏 */
+        /* 响应式：在大屏幕上保持三个一排，宽度足够时不换行，按钮宽度自适应 */
+        @media (min-width: 1024px) {
+            .button-group {
+                flex-wrap: nowrap;
+                justify-content: center;
+            }
+            .tool-btn {
+                min-width: 240px;
+                padding: 1.5rem 1.8rem;
+            }
+        }
+
+        /* 中等屏幕：如果空间紧张允许换行，但依然横排表现（换行后每行居中对齐） */
+        @media (max-width: 1023px) and (min-width: 769px) {
+            .button-group {
+                gap: 1.5rem;
+            }
+            .tool-btn {
+                min-width: 210px;
+                padding: 1.3rem 1.2rem;
+            }
+            .btn-title {
+                font-size: 1.4rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .button-group {
+                gap: 1.5rem;
+            }
+            .tool-btn {
+                min-width: 200px;
+                padding: 1.2rem 1rem;
+            }
+            .btn-title {
+                font-size: 1.3rem;
+            }
+            .hero-text h1 {
+                font-size: 1.9rem;
+            }
+        }
+
         @media (max-width: 680px) {
             .button-group {
                 gap: 1.2rem;
             }
             .tool-btn {
-                min-width: 180px;
-                padding: 1rem 1.2rem;
+                min-width: 170px;
+                padding: 1rem 0.9rem;
             }
             .btn-title {
                 font-size: 1.2rem;
             }
-            .hero-text h1 {
-                font-size: 1.8rem;
-            }
             .hero-text p {
                 font-size: 0.9rem;
             }
+            .hero-text h1 {
+                font-size: 1.7rem;
+            }
         }
 
-        @media (max-width: 520px) {
-            .button-group {
-                gap: 0.9rem;
-            }
+        @media (max-width: 560px) {
             .tool-btn {
                 min-width: 155px;
-                padding: 0.9rem 0.8rem;
+                padding: 0.9rem 0.7rem;
             }
             .btn-title {
                 font-size: 1rem;
@@ -311,45 +369,23 @@
             .header {
                 padding: 1rem 1.2rem;
             }
-            .hero-text {
-                margin-bottom: 2rem;
-            }
-            .logo-area {
-                font-size: 0.7rem;
+            .button-group {
+                gap: 1rem;
             }
         }
 
-        /* 极端超小屏依然保持横排 (强制不换行，但可能内容折行，但高度自适应) */
-        @media (max-width: 420px) {
+        /* 小屏手机依然保持按钮清晰，三个可能垂直排列但仍是横排概念（flex换行后为列向），但符合可用性 */
+        @media (max-width: 480px) {
             .tool-btn {
                 min-width: 140px;
-                padding: 0.7rem 0.5rem;
             }
             .btn-title {
-                font-size: 0.9rem;
-                white-space: normal;
-                word-break: keep-all;
-            }
-            .btn-sub {
-                font-size: 0.65rem;
-            }
-            .button-group {
-                gap: 0.7rem;
+                font-size: 0.95rem;
             }
         }
 
-        /* 确保按钮容器在任何情况下都是水平flex，不换行 */
-        @media (max-width: 360px) {
-            .tool-btn {
-                min-width: 130px;
-            }
-            .btn-title {
-                font-size: 0.85rem;
-            }
-        }
-
-        /* 鼠标点击额外辅助 */
-        a:focus-visible {
+        /* 鼠标点击辅助 */
+        a:focus-visible, .tool-btn:focus-visible {
             outline: 2px solid #0cf;
             outline-offset: 4px;
             border-radius: 24px;
@@ -360,10 +396,10 @@
 <div class="app">
     <div class="header">
         <div class="logo-area">
-            📐 <span>MathAid</span> · 王老师的智能教学辅助
+            📐 <span>MathAid</span> · 王老师的智能教学辅助系统
         </div>
         <div class="badge-pending">
-            待创建 · 更多模块...
+            待创建 · 更多互动模块
         </div>
     </div>
 
@@ -373,7 +409,7 @@
             <p>⚡ 为数学老师量身打造 · 动态演示与交互辅助工具 ⚡</p>
         </div>
 
-        <!-- 横排并列的两个矩形按钮，指向另外两个html页面 -->
+        <!-- 三个横排并列的矩形按钮：二次函数、正弦函数、更多内容待更新 -->
         <div class="button-group">
             <a href="二次函数辅助教学.html" class="tool-btn" target="_self">
                 <div class="btn-title">📈 二次函数</div>
@@ -383,11 +419,16 @@
                 <div class="btn-title">〰️ 正弦函数</div>
                 <div class="btn-sub">辅助教学 · 周期变换 · 动态波形</div>
             </a>
+            <!-- 第三个按钮：更多内容待更新，占位符，点击展示友好提示，表示后续更新更多数学知识工具 -->
+            <div class="tool-btn coming-soon" id="moreComingBtn">
+                <div class="btn-title">✨ 更多内容</div>
+                <div class="btn-sub">待更新中 · 指数函数 · 几何解析<br>更多数学工具即将到来</div>
+            </div>
         </div>
 
-        <!-- 简约装饰线条，体现科技与数学结合 -->
+        <!-- 简约装饰线条，体现科技与数学结合，加入扩展性提示 -->
         <div class="math-deco">
-            <span>∫</span> <span>f(x) = ax²+bx+c</span> <span>sinθ</span> <span>ω</span> <span>π</span>
+            <span>∫</span> <span>f(x) = ax²+bx+c</span> <span>sinθ</span> <span>eˣ</span> <span>log</span> <span>π</span>
         </div>
     </div>
 
@@ -403,18 +444,38 @@
     </div>
 </div>
 
-<!-- 可选：增加简单的控制台提示，仅用于展示辅助工具属性 -->
 <script>
-    // 极简控制台输出，表明主页作为教师辅助工具入口
+    // 为“更多内容待更新”按钮添加交互提示，保持原有功能完整性，并强调后续会更新更多数学知识工具
     (function() {
-        console.log("数学辅助教学工具主页 | 设计者：王乐成 | 为老师提供函数教学支持");
-        // 也可以预检测链接指向文件是否存在（只是开发友好提示，不干扰用户）
-        const links = document.querySelectorAll('.tool-btn');
-        links.forEach(link => {
+        console.log("数学辅助教学工具主页 | 设计者：王乐成 | 三模块入口（二次函数、正弦函数及更多待更新）");
+        
+        const moreBtn = document.getElementById('moreComingBtn');
+        if (moreBtn) {
+            // 设置点击事件，提醒用户后续会更新更多数学工具，不会跳转页面
+            moreBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                // 轻提示风格（也可使用alert，但为了体验使用一个精致浮层，但为简约，采用alert并搭配优雅文案）
+                // 为了符合整体科技感，使用原生alert但可自定义样式？为避免侵入，直接alert但友好
+                alert('✨ 更多数学知识工具正在筹备中 ✨\n\n后续将陆续推出：指数函数、对数函数、三角函数进阶、几何画板辅助等。\n感谢王乐成老师的教学支持，敬请期待！');
+            });
+            // 添加键盘可访问性
+            moreBtn.setAttribute('role', 'button');
+            moreBtn.setAttribute('tabindex', '0');
+            moreBtn.setAttribute('aria-label', '更多内容待更新，点击查看后续计划');
+            moreBtn.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    moreBtn.click();
+                }
+            });
+        }
+
+        // 为现有两个有效链接添加控制台友好提示（不干扰使用）
+        const validLinks = document.querySelectorAll('.tool-btn:not(.coming-soon)');
+        validLinks.forEach(link => {
             link.addEventListener('click', (e) => {
-                // 仅控制台提示跳转，不阻止默认行为
                 const targetUrl = link.getAttribute('href');
-                console.log(`即将跳转到教学模块: ${targetUrl} , 请确保对应html文件存在于相同目录下`);
+                console.log(`进入教学模块: ${targetUrl} ，请确保对应的html文件位于同一目录下`);
             });
         });
     })();
