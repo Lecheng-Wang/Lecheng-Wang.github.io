@@ -1,1 +1,529 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>海洋路中学2026新生报到分组查询</title>
+<style>
+  :root {
+    --primary: #4f6ef7;
+    --primary-dark: #3b54d4;
+    --bg: #f0f4f8;
+    --card-bg: #ffffff;
+    --text: #2d3748;
+    --text-secondary: #718096;
+    --border: #e2e8f0;
+    --success: #48bb78;
+    --warning: #ecc94b;
+    --danger: #fc8181;
+    --shadow: 0 4px 6px -1px rgba(0,0,0,0.07), 0 2px 4px -1px rgba(0,0,0,0.04);
+    --shadow-lg: 0 20px 40px -8px rgba(0,0,0,0.1);
+    --radius: 16px;
+  }
 
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC',
+                 'Microsoft YaHei', 'Helvetica Neue', sans-serif;
+    background: var(--bg);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+
+  .background-decoration {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bg-circle {
+    position: absolute;
+    border-radius: 50%;
+    opacity: 0.06;
+  }
+  .bg-circle.c1 { width: 500px; height: 500px; top: -150px; left: -100px; background: var(--primary); }
+  .bg-circle.c2 { width: 400px; height: 400px; bottom: -120px; right: -80px; background: #3b82f6; }
+  .bg-circle.c3 { width: 300px; height: 300px; top: 40%; left: 60%; background: #6366f1; }
+
+  .container {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    max-width: 520px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+  .header .icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px; height: 64px;
+    background: linear-gradient(135deg, var(--primary), #6366f1);
+    border-radius: 20px;
+    font-size: 30px;
+    color: white;
+    margin-bottom: 16px;
+    box-shadow: 0 8px 24px rgba(79,110,247,0.3);
+  }
+  .header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: -0.5px;
+  }
+  .header p {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-top: 6px;
+  }
+
+  /* Card */
+  .card {
+    background: var(--card-bg);
+    border-radius: var(--radius);
+    padding: 28px 24px;
+    box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border);
+  }
+
+  /* Search */
+  .search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+  }
+  .search-input-wrapper {
+    flex: 1;
+    position: relative;
+  }
+  .search-input-wrapper .search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #a0aec0;
+    font-size: 18px;
+    pointer-events: none;
+  }
+  .search-input {
+    width: 100%;
+    padding: 13px 14px 13px 42px;
+    font-size: 20px;
+    border: 2px solid var(--border);
+    border-radius: 12px;
+    outline: none;
+    transition: all 0.2s;
+    color: var(--text);
+    background: #f8fafc;
+  }
+  .search-input:focus {
+    border-color: var(--primary);
+    background: white;
+    box-shadow: 0 0 0 3px rgba(79,110,247,0.1);
+  }
+  .search-input::placeholder { color: #cbd5e0; }
+
+  .search-btn {
+    padding: 13px 24px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s;
+  }
+  .search-btn:hover { background: var(--primary-dark); transform: translateY(-1px); }
+  .search-btn:active { transform: translateY(0); }
+
+  /* Hint */
+  .search-hint {
+    font-size: 16px;
+    color: var(--text-secondary);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .search-hint .tag {
+    display: inline-block;
+    padding: 2px 8px;
+    background: #edf2f7;
+    border-radius: 10px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: background 0.15s;
+    color: var(--text-secondary);
+  }
+  .search-hint .tag:hover { background: #e2e8f0; color: var(--text); }
+
+  /* Result */
+  .result-area {
+    min-height: 80px;
+  }
+  .result-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #cbd5e0;
+  }
+  .result-empty .empty-icon {
+    font-size: 48px;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .result-empty .empty-text {
+    font-size: 14px;
+  }
+
+  .result-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px;
+    border-radius: 12px;
+    background: #f7fafc;
+    border: 1px solid var(--border);
+    margin-bottom: 10px;
+    transition: all 0.2s;
+  }
+  .result-item:hover {
+    border-color: #c4d3ef;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+  }
+  .result-item .group-badge {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    font-weight: 700;
+    font-size: 20px;
+    color: white;
+  }
+  .result-item .info { flex: 1; min-width: 0; }
+  .result-item .info .name {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .result-item .info .group-label {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+  }
+  .result-item .info .group-label strong {
+    color: var(--primary);
+    font-size: 16px;
+  }
+  .result-item .arrow {
+    color: #cbd5e0;
+    font-size: 20px;
+  }
+
+  .result-not-found {
+    text-align: center;
+    padding: 30px 20px;
+  }
+  .result-not-found .nf-icon {
+    font-size: 52px;
+    display: block;
+    margin-bottom: 10px;
+  }
+  .result-not-found .nf-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 4px;
+  }
+  .result-not-found .nf-hint {
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+
+  .result-count {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 12px;
+    padding-left: 4px;
+  }
+
+  /* Group colors - cycle through distinct hues */
+  .group-c0 { background: linear-gradient(135deg, #4f6ef7, #6366f1); }  /* indigo */
+  .group-c1 { background: linear-gradient(135deg, #f59e0b, #d97706); }  /* amber */
+  .group-c2 { background: linear-gradient(135deg, #10b981, #059669); }  /* emerald */
+  .group-c3 { background: linear-gradient(135deg, #ef4444, #dc2626); }  /* red */
+  .group-c4 { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }  /* violet */
+  .group-c5 { background: linear-gradient(135deg, #ec4899, #db2777); }  /* pink */
+  .group-c6 { background: linear-gradient(135deg, #14b8a6, #0d9488); }  /* teal */
+  .group-c7 { background: linear-gradient(135deg, #f97316, #ea580c); }  /* orange */
+  .group-c8 { background: linear-gradient(135deg, #06b6d4, #0891b2); }  /* cyan */
+  .group-c9 { background: linear-gradient(135deg, #84cc16, #65a30d); }  /* lime */
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    margin-top: 18px;
+    font-size: 12px;
+    color: #a0aec0;
+  }
+
+  /* Responsive */
+  @media (max-width: 480px) {
+    .card { padding: 20px 16px; }
+    .header h1 { font-size: 22px; }
+    .search-input { font-size: 15px; }
+    .result-item .group-badge { width: 48px; height: 48px; font-size: 17px; border-radius: 12px; }
+    .result-item .info .name { font-size: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="background-decoration">
+  <div class="bg-circle c1"></div>
+  <div class="bg-circle c2"></div>
+  <div class="bg-circle c3"></div>
+</div>
+
+<div class="container">
+  <div class="header">
+    <div class="icon">🔍</div>
+    <h1>海洋路中学新生报到分组查询</h1>
+    <p>输入姓名，快速查找报到组别</p>
+  </div>
+
+  <div class="card">
+    <div class="search-box">
+      <div class="search-input-wrapper">
+        <span class="search-icon">🔎</span>
+        <input
+          type="text"
+          class="search-input"
+          id="searchInput"
+          placeholder="请输入学生姓名…"
+          autocomplete="off"
+          autofocus
+        >
+      </div>
+      <button class="search-btn" id="searchBtn">查询</button>
+    </div>
+
+    <div class="search-hint">
+      💡 试试搜索：
+      <span class="tag" onclick="quickSearch(this)">张</span>
+      <span class="tag" onclick="quickSearch(this)">王</span>
+      <span class="tag" onclick="quickSearch(this)">李</span>
+      <span class="tag" onclick="quickSearch(this)">陈</span>
+      <span class="tag" onclick="quickSearch(this)">刘</span>
+    </div>
+
+    <div class="result-area" id="resultArea">
+      <div class="result-empty">
+        <span class="empty-icon">📋</span>
+        <span class="empty-text">共有 567 名新生 | 分为 10 个组别</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    2026年天府新区海洋路中学新生入学分组系统
+  </div>
+</div>
+
+<script>
+// ===== Student Data =====
+const STUDENTS = [{"name": "艾钰祥", "group": "1组"}, {"name": "白梓夢", "group": "1组"}, {"name": "白梓墨", "group": "1组"}, {"name": "边之瀚", "group": "1组"}, {"name": "蔡嘉", "group": "1组"}, {"name": "蔡闻渊", "group": "1组"}, {"name": "蔡一轮", "group": "1组"}, {"name": "曹驰城", "group": "1组"}, {"name": "曹峻宁", "group": "1组"}, {"name": "曹梓伊", "group": "1组"}, {"name": "曾彩懿", "group": "1组"}, {"name": "曾涵蕊", "group": "1组"}, {"name": "曾纪陶", "group": "1组"}, {"name": "曾洛熙", "group": "1组"}, {"name": "曾萌涵", "group": "1组"}, {"name": "曾怡霏", "group": "1组"}, {"name": "查毅恒", "group": "1组"}, {"name": "陈飞宇", "group": "1组"}, {"name": "陈莞琳", "group": "1组"}, {"name": "陈昊宇", "group": "1组"}, {"name": "陈乐轩", "group": "1组"}, {"name": "陈明扬", "group": "1组"}, {"name": "陈芮茜", "group": "1组"}, {"name": "陈思吉", "group": "1组"}, {"name": "陈思妙", "group": "1组"}, {"name": "陈思妍", "group": "1组"}, {"name": "陈欣妍", "group": "1组"}, {"name": "陈宣亦", "group": "1组"}, {"name": "陈彦行", "group": "1组"}, {"name": "陈怡彤", "group": "1组"}, {"name": "陈柚言", "group": "1组"}, {"name": "陈玥灵茜", "group": "1组"}, {"name": "陈子颀", "group": "1组"}, {"name": "成宇乐", "group": "1组"}, {"name": "程怡然", "group": "1组"}, {"name": "程子楠", "group": "1组"}, {"name": "崔馝芯", "group": "1组"}, {"name": "崔隽屹", "group": "1组"}, {"name": "代安娜", "group": "1组"}, {"name": "代梦娜", "group": "1组"}, {"name": "但怡宏", "group": "1组"}, {"name": "邓博洋", "group": "1组"}, {"name": "邓淩菲", "group": "1组"}, {"name": "邓曼迪", "group": "1组"}, {"name": "邓舒雪予", "group": "1组"}, {"name": "邓婉慧儿", "group": "1组"}, {"name": "邓雪迪", "group": "1组"}, {"name": "邓雅心", "group": "1组"}, {"name": "邓艺辰", "group": "1组"}, {"name": "丁浩然", "group": "1组"}, {"name": "丁泊凯", "group": "1组"}, {"name": "丁小伊", "group": "1组"}, {"name": "董思言", "group": "1组"}, {"name": "窦国瑄", "group": "1组"}, {"name": "杜欣耘", "group": "1组"}, {"name": "杜一辰", "group": "1组"}, {"name": "杜逸晨", "group": "1组"}, {"name": "杜盈萾", "group": "2组"}, {"name": "杜雨荷", "group": "2组"}, {"name": "段蔚坤", "group": "2组"}, {"name": "樊诚晨", "group": "2组"}, {"name": "樊晋川", "group": "2组"}, {"name": "樊麒川", "group": "2组"}, {"name": "范悦玲", "group": "2组"}, {"name": "方言", "group": "2组"}, {"name": "方彦熹", "group": "2组"}, {"name": "丰乐冉", "group": "2组"}, {"name": "冯恒与", "group": "2组"}, {"name": "冯俊逸", "group": "2组"}, {"name": "冯睿捷", "group": "2组"}, {"name": "冯天翊", "group": "2组"}, {"name": "奉济霖", "group": "2组"}, {"name": "付恩宇", "group": "2组"}, {"name": "付乙然", "group": "2组"}, {"name": "高欣萌", "group": "2组"}, {"name": "高歆淼", "group": "2组"}, {"name": "高梓宸", "group": "2组"}, {"name": "高梓骏", "group": "2组"}, {"name": "勾越", "group": "2组"}, {"name": "苟梓晨", "group": "2组"}, {"name": "辜诗蕙", "group": "2组"}, {"name": "辜梓阳", "group": "2组"}, {"name": "顾瑞恩", "group": "2组"}, {"name": "郭馨予", "group": "2组"}, {"name": "郭一俊", "group": "2组"}, {"name": "郭榆晏", "group": "2组"}, {"name": "韩玟溪", "group": "2组"}, {"name": "韩梓轩", "group": "2组"}, {"name": "郝沐妍", "group": "2组"}, {"name": "郝志远", "group": "2组"}, {"name": "郝紫贻", "group": "2组"}, {"name": "何安然", "group": "2组"}, {"name": "何瀚宇", "group": "2组"}, {"name": "何佳桐", "group": "2组"}, {"name": "何敏瑞", "group": "2组"}, {"name": "何松纭", "group": "2组"}, {"name": "何鑫", "group": "2组"}, {"name": "何一鸣", "group": "2组"}, {"name": "何怡霏", "group": "2组"}, {"name": "何益朵", "group": "2组"}, {"name": "何勇强", "group": "2组"}, {"name": "何芷晗", "group": "2组"}, {"name": "贺三骅", "group": "2组"}, {"name": "贺诗涵", "group": "2组"}, {"name": "贺思涵", "group": "2组"}, {"name": "贺子迅", "group": "2组"}, {"name": "衡一夫", "group": "2组"}, {"name": "洪若菲", "group": "2组"}, {"name": "侯葰熙", "group": "2组"}, {"name": "侯奕希", "group": "2组"}, {"name": "胡骅逸", "group": "2组"}, {"name": "胡欣芮", "group": "2组"}, {"name": "胡岩松", "group": "2组"}, {"name": "胡玥衫", "group": "2组"}, {"name": "黄安然", "group": "3组"}, {"name": "黄博远", "group": "3组"}, {"name": "黄昊炀", "group": "3组"}, {"name": "黄继波", "group": "3组"}, {"name": "黄俊乂", "group": "3组"}, {"name": "黄开益", "group": "3组"}, {"name": "黄可欣", "group": "3组"}, {"name": "黄铭洋", "group": "3组"}, {"name": "黄溶萱", "group": "3组"}, {"name": "黄熙童", "group": "3组"}, {"name": "黄译萱", "group": "3组"}, {"name": "黄雨馨", "group": "3组"}, {"name": "黄梓轩", "group": "3组"}, {"name": "黄梓轩", "group": "3组"}, {"name": "贾茜茹", "group": "3组"}, {"name": "贾若轩", "group": "3组"}, {"name": "贾欣怡", "group": "3组"}, {"name": "贾雨萌", "group": "3组"}, {"name": "江雅静", "group": "3组"}, {"name": "姜茗瑞", "group": "3组"}, {"name": "姜馨怡", "group": "3组"}, {"name": "姜雨彤", "group": "3组"}, {"name": "蒋静好", "group": "3组"}, {"name": "蒋珂羽", "group": "3组"}, {"name": "蒋语朵", "group": "3组"}, {"name": "康宸昕", "group": "3组"}, {"name": "康津肇", "group": "3组"}, {"name": "康云鹏", "group": "3组"}, {"name": "亢俊航", "group": "3组"}, {"name": "柯骏毅", "group": "3组"}, {"name": "旷锦蕊", "group": "3组"}, {"name": "赖泓锦", "group": "3组"}, {"name": "兰乐祎", "group": "3组"}, {"name": "乐语歆", "group": "3组"}, {"name": "雷函溢", "group": "3组"}, {"name": "雷奇烨", "group": "3组"}, {"name": "黎成悦", "group": "3组"}, {"name": "黎珩宇", "group": "3组"}, {"name": "李冰蕊", "group": "3组"}, {"name": "李成林", "group": "3组"}, {"name": "李恩熙", "group": "3组"}, {"name": "李晗", "group": "3组"}, {"name": "李浩宇", "group": "3组"}, {"name": "李皓宇", "group": "3组"}, {"name": "李佳颖", "group": "3组"}, {"name": "李佳悦", "group": "3组"}, {"name": "李家辉", "group": "3组"}, {"name": "李家茂", "group": "3组"}, {"name": "李嘉瑞", "group": "3组"}, {"name": "李嘉臻", "group": "3组"}, {"name": "李骏", "group": "3组"}, {"name": "李澜涛", "group": "3组"}, {"name": "李路冉", "group": "3组"}, {"name": "李湄朵", "group": "3组"}, {"name": "李美萱", "group": "3组"}, {"name": "李萌萌", "group": "3组"}, {"name": "李杪芝", "group": "3组"}, {"name": "李明益", "group": "4组"}, {"name": "李铭翊", "group": "4组"}, {"name": "李慕坷晨", "group": "4组"}, {"name": "李芃宣", "group": "4组"}, {"name": "李芊乐", "group": "4组"}, {"name": "李青廷", "group": "4组"}, {"name": "李若兮", "group": "4组"}, {"name": "李思瑶", "group": "4组"}, {"name": "李婉瑜", "group": "4组"}, {"name": "李文允", "group": "4组"}, {"name": "李欣璐", "group": "4组"}, {"name": "李欣瑞", "group": "4组"}, {"name": "李欣怡", "group": "4组"}, {"name": "李新月", "group": "4组"}, {"name": "李歆苒", "group": "4组"}, {"name": "李宣霖", "group": "4组"}, {"name": "李妍希", "group": "4组"}, {"name": "李彦颉", "group": "4组"}, {"name": "李宜倪", "group": "4组"}, {"name": "李奕乐", "group": "4组"}, {"name": "李翊辰", "group": "4组"}, {"name": "李泽轩", "group": "4组"}, {"name": "李圳宇", "group": "4组"}, {"name": "李芷妍", "group": "4组"}, {"name": "李栉瑾", "group": "4组"}, {"name": "李周锦阳", "group": "4组"}, {"name": "李梓未", "group": "4组"}, {"name": "李梓煊", "group": "4组"}, {"name": "李梓瑶", "group": "4组"}, {"name": "李梓烨", "group": "4组"}, {"name": "栗晨翌", "group": "4组"}, {"name": "梁宝文", "group": "4组"}, {"name": "梁雪莲", "group": "4组"}, {"name": "廖淼淼", "group": "4组"}, {"name": "廖逸宸", "group": "4组"}, {"name": "廖羽", "group": "4组"}, {"name": "廖梓浩", "group": "4组"}, {"name": "林柯帆", "group": "4组"}, {"name": "林孙宇", "group": "4组"}, {"name": "林欣怡", "group": "4组"}, {"name": "林新然", "group": "4组"}, {"name": "林子寒", "group": "4组"}, {"name": "林梓晨", "group": "4组"}, {"name": "刘倍纤", "group": "4组"}, {"name": "刘陈一洢", "group": "4组"}, {"name": "刘宸玮", "group": "4组"}, {"name": "刘浩宇", "group": "4组"}, {"name": "刘虹辰", "group": "4组"}, {"name": "刘佳芮", "group": "4组"}, {"name": "刘佳锐", "group": "4组"}, {"name": "刘柯欣", "group": "4组"}, {"name": "刘坤渝", "group": "4组"}, {"name": "刘栗铖", "group": "4组"}, {"name": "刘默霏", "group": "4组"}, {"name": "刘清仪", "group": "4组"}, {"name": "刘芮僮", "group": "4组"}, {"name": "刘书言", "group": "4组"}, {"name": "刘唐婧雯", "group": "5组"}, {"name": "刘庭楦", "group": "5组"}, {"name": "刘宛晴", "group": "5组"}, {"name": "刘熙雅", "group": "5组"}, {"name": "刘欣怡", "group": "5组"}, {"name": "刘馨遥", "group": "5组"}, {"name": "刘鑫杰", "group": "5组"}, {"name": "刘星邑", "group": "5组"}, {"name": "刘妍熙", "group": "5组"}, {"name": "刘楊熙", "group": "5组"}, {"name": "刘一涵", "group": "5组"}, {"name": "刘弈凡", "group": "5组"}, {"name": "刘奕辰", "group": "5组"}, {"name": "刘羽辰", "group": "5组"}, {"name": "刘子宸", "group": "5组"}, {"name": "刘梓涵", "group": "5组"}, {"name": "刘梓奕", "group": "5组"}, {"name": "柳德荀", "group": "5组"}, {"name": "龙昊予", "group": "5组"}, {"name": "龙骏霖", "group": "5组"}, {"name": "龙沐菲", "group": "5组"}, {"name": "龙思蕊", "group": "5组"}, {"name": "龙馨竹", "group": "5组"}, {"name": "卢奕豪", "group": "5组"}, {"name": "卢雨桐", "group": "5组"}, {"name": "卢梓萱", "group": "5组"}, {"name": "陆文轩", "group": "5组"}, {"name": "陆一歌", "group": "5组"}, {"name": "罗海玲", "group": "5组"}, {"name": "罗嘉煜", "group": "5组"}, {"name": "罗璟轩", "group": "5组"}, {"name": "罗浚豪", "group": "5组"}, {"name": "罗浚弘", "group": "5组"}, {"name": "罗朗", "group": "5组"}, {"name": "罗梦琪", "group": "5组"}, {"name": "罗锐杰", "group": "5组"}, {"name": "罗心怡", "group": "5组"}, {"name": "罗伊玲", "group": "5组"}, {"name": "罗胤辰", "group": "5组"}, {"name": "罗语儿", "group": "5组"}, {"name": "罗梓月", "group": "5组"}, {"name": "罗紫艺", "group": "5组"}, {"name": "骆泽涵", "group": "5组"}, {"name": "吕佳欣", "group": "5组"}, {"name": "吕芮楠", "group": "5组"}, {"name": "吕尚文", "group": "5组"}, {"name": "吕诗颖", "group": "5组"}, {"name": "马晨风", "group": "5组"}, {"name": "马嘉悦", "group": "5组"}, {"name": "马靖熙", "group": "5组"}, {"name": "马姝贝", "group": "5组"}, {"name": "马思语", "group": "5组"}, {"name": "马瑛", "group": "5组"}, {"name": "毛厚钧", "group": "5组"}, {"name": "毛啓志", "group": "5组"}, {"name": "毛泽恩", "group": "5组"}, {"name": "孟柳君", "group": "5组"}, {"name": "牟传杰", "group": "6组"}, {"name": "牟予萱", "group": "6组"}, {"name": "倪嘉玮", "group": "6组"}, {"name": "甯梓桐", "group": "6组"}, {"name": "潘偲辰", "group": "6组"}, {"name": "潘子涵", "group": "6组"}, {"name": "彭楚晴", "group": "6组"}, {"name": "彭柯谕", "group": "6组"}, {"name": "彭可为", "group": "6组"}, {"name": "彭雅溪", "group": "6组"}, {"name": "彭奕翔", "group": "6组"}, {"name": "蒲馨杨", "group": "6组"}, {"name": "蒲娅萱", "group": "6组"}, {"name": "蒲颐卓", "group": "6组"}, {"name": "蒲奕丞", "group": "6组"}, {"name": "谯擎宇", "group": "6组"}, {"name": "秦梓淇", "group": "6组"}, {"name": "邱俏灿", "group": "6组"}, {"name": "屈浩宇", "group": "6组"}, {"name": "全斌睿", "group": "6组"}, {"name": "冉培瑜", "group": "6组"}, {"name": "任奕芯", "group": "6组"}, {"name": "任子渊", "group": "6组"}, {"name": "沙钰涵", "group": "6组"}, {"name": "申雪妍", "group": "6组"}, {"name": "沈曼妮", "group": "6组"}, {"name": "沈谧苡", "group": "6组"}, {"name": "沈梓萱", "group": "6组"}, {"name": "盛琳茜", "group": "6组"}, {"name": "石渃水", "group": "6组"}, {"name": "史芯蕊", "group": "6组"}, {"name": "舒雯", "group": "6组"}, {"name": "宋博锐", "group": "6组"}, {"name": "宋君皓", "group": "6组"}, {"name": "宋维艺", "group": "6组"}, {"name": "宋易睿", "group": "6组"}, {"name": "宋俞兴", "group": "6组"}, {"name": "宋雨晨", "group": "6组"}, {"name": "宋月馨", "group": "6组"}, {"name": "宋梓萱", "group": "6组"}, {"name": "苏雅婷", "group": "6组"}, {"name": "孙秉彦", "group": "6组"}, {"name": "孙思彤", "group": "6组"}, {"name": "孙兮雅", "group": "6组"}, {"name": "孙欣蓉", "group": "6组"}, {"name": "孙鑫成", "group": "6组"}, {"name": "孙艺铖", "group": "6组"}, {"name": "孙萸轩", "group": "6组"}, {"name": "孙予晗", "group": "6组"}, {"name": "檀梓荟", "group": "6组"}, {"name": "汤济睿", "group": "6组"}, {"name": "唐宝懿", "group": "6组"}, {"name": "唐睿煊", "group": "6组"}, {"name": "唐世曦", "group": "6组"}, {"name": "唐天毅", "group": "6组"}, {"name": "唐熙茗", "group": "6组"}, {"name": "唐娅芯", "group": "6组"}, {"name": "唐一菲", "group": "7组"}, {"name": "唐怡然", "group": "7组"}, {"name": "唐翊宸", "group": "7组"}, {"name": "唐宇辰", "group": "7组"}, {"name": "唐宇泽", "group": "7组"}, {"name": "唐云乔", "group": "7组"}, {"name": "唐梓诚", "group": "7组"}, {"name": "唐梓涵", "group": "7组"}, {"name": "唐紫涵", "group": "7组"}, {"name": "陶栩如", "group": "7组"}, {"name": "陶雨萱", "group": "7组"}, {"name": "田浩铭", "group": "7组"}, {"name": "田浩楠", "group": "7组"}, {"name": "田伟诚", "group": "7组"}, {"name": "涂雅兰", "group": "7组"}, {"name": "万辰逸", "group": "7组"}, {"name": "汪雅文", "group": "7组"}, {"name": "汪禹扬", "group": "7组"}, {"name": "王艾佳", "group": "7组"}, {"name": "王辰熙", "group": "7组"}, {"name": "王浩楠", "group": "7组"}, {"name": "王佳禾", "group": "7组"}, {"name": "王佳芮", "group": "7组"}, {"name": "王家馨", "group": "7组"}, {"name": "王嘉文", "group": "7组"}, {"name": "王俊杰", "group": "7组"}, {"name": "王俊杰", "group": "7组"}, {"name": "王诺琳", "group": "7组"}, {"name": "王棋轩", "group": "7组"}, {"name": "王钦", "group": "7组"}, {"name": "王天凯", "group": "7组"}, {"name": "王天祥", "group": "7组"}, {"name": "王文昊", "group": "7组"}, {"name": "王馨艺", "group": "7组"}, {"name": "王艺博", "group": "7组"}, {"name": "王奕骋", "group": "7组"}, {"name": "王奕翔", "group": "7组"}, {"name": "王雨嘉", "group": "7组"}, {"name": "王越锌", "group": "7组"}, {"name": "王韵榣", "group": "7组"}, {"name": "王姿茜", "group": "7组"}, {"name": "王子墨", "group": "7组"}, {"name": "王子睿", "group": "7组"}, {"name": "王紫琪", "group": "7组"}, {"name": "韦欣辰", "group": "7组"}, {"name": "魏川博", "group": "7组"}, {"name": "魏睫怡", "group": "7组"}, {"name": "魏士钦", "group": "7组"}, {"name": "魏之豪", "group": "7组"}, {"name": "文晨成", "group": "7组"}, {"name": "文海嘉", "group": "7组"}, {"name": "邬旭东", "group": "7组"}, {"name": "巫奕霏", "group": "7组"}, {"name": "吴庚忆", "group": "7组"}, {"name": "吴骏宏", "group": "7组"}, {"name": "吴睿轩", "group": "7组"}, {"name": "吴文韬", "group": "7组"}, {"name": "吴依依", "group": "8组"}, {"name": "吴艺萌", "group": "8组"}, {"name": "吴奕璇", "group": "8组"}, {"name": "吴佑雨", "group": "8组"}, {"name": "伍晋颉", "group": "8组"}, {"name": "伍益豪", "group": "8组"}, {"name": "夏靖轩", "group": "8组"}, {"name": "夏龙兴", "group": "8组"}, {"name": "夏睿阳", "group": "8组"}, {"name": "夏天", "group": "8组"}, {"name": "向豪阳", "group": "8组"}, {"name": "向佳迪", "group": "8组"}, {"name": "向天皓", "group": "8组"}, {"name": "项辰曦", "group": "8组"}, {"name": "肖宸安", "group": "8组"}, {"name": "肖函奇", "group": "8组"}, {"name": "肖雨珂", "group": "8组"}, {"name": "肖云起", "group": "8组"}, {"name": "肖允禔", "group": "8组"}, {"name": "谢辰熙", "group": "8组"}, {"name": "谢佳佑", "group": "8组"}, {"name": "谢涛如", "group": "8组"}, {"name": "谢雨轩", "group": "8组"}, {"name": "谢子宸", "group": "8组"}, {"name": "熊元若", "group": "8组"}, {"name": "熊子艺", "group": "8组"}, {"name": "熊梓言", "group": "8组"}, {"name": "徐晨茜", "group": "8组"}, {"name": "徐恩善", "group": "8组"}, {"name": "徐冠莀", "group": "8组"}, {"name": "徐嘉骏", "group": "8组"}, {"name": "徐靖寒", "group": "8组"}, {"name": "徐秋月", "group": "8组"}, {"name": "徐文浩", "group": "8组"}, {"name": "徐延宋", "group": "8组"}, {"name": "徐源城", "group": "8组"}, {"name": "徐媛美", "group": "8组"}, {"name": "徐子涵", "group": "8组"}, {"name": "许生威", "group": "8组"}, {"name": "许远淋", "group": "8组"}, {"name": "鄢旭宸", "group": "8组"}, {"name": "颜祺林", "group": "8组"}, {"name": "颜诗程", "group": "8组"}, {"name": "颜烨震", "group": "8组"}, {"name": "阳宜轩", "group": "8组"}, {"name": "杨博霖", "group": "8组"}, {"name": "杨宸熙", "group": "8组"}, {"name": "杨淳雅", "group": "8组"}, {"name": "杨涵稀", "group": "8组"}, {"name": "杨钧童", "group": "8组"}, {"name": "杨檬嘉", "group": "8组"}, {"name": "杨沐锦", "group": "8组"}, {"name": "杨念晞", "group": "8组"}, {"name": "杨麒玉", "group": "8组"}, {"name": "杨羲睿", "group": "8组"}, {"name": "杨曦童", "group": "8组"}, {"name": "杨心瑶", "group": "9组"}, {"name": "杨雅轩", "group": "9组"}, {"name": "杨雨菡", "group": "9组"}, {"name": "杨雨馨", "group": "9组"}, {"name": "杨玉蓉", "group": "9组"}, {"name": "杨钰国", "group": "9组"}, {"name": "杨泽蕊", "group": "9组"}, {"name": "杨子巍", "group": "9组"}, {"name": "姚欣悦", "group": "9组"}, {"name": "姚熠欣", "group": "9组"}, {"name": "叶晟卓", "group": "9组"}, {"name": "叶嘉语", "group": "9组"}, {"name": "叶峻诚", "group": "9组"}, {"name": "叶天霖", "group": "9组"}, {"name": "叶星辰", "group": "9组"}, {"name": "叶梓馨", "group": "9组"}, {"name": "尹妤晗", "group": "9组"}, {"name": "尹梓鸣", "group": "9组"}, {"name": "于芷蕊", "group": "9组"}, {"name": "余弘毅", "group": "9组"}, {"name": "余茉萱", "group": "9组"}, {"name": "余瑞欣", "group": "9组"}, {"name": "余彦希", "group": "9组"}, {"name": "余瑶", "group": "9组"}, {"name": "余翼展", "group": "9组"}, {"name": "喻孟轩", "group": "9组"}, {"name": "喻馨", "group": "9组"}, {"name": "喻言沁", "group": "9组"}, {"name": "袁晨悦", "group": "9组"}, {"name": "袁崇鸣", "group": "9组"}, {"name": "昝昕辰", "group": "9组"}, {"name": "占子晨", "group": "9组"}, {"name": "张恩培", "group": "9组"}, {"name": "张海蓝", "group": "9组"}, {"name": "张海越", "group": "9组"}, {"name": "张瀚尹", "group": "9组"}, {"name": "张浩然", "group": "9组"}, {"name": "张佳睿", "group": "9组"}, {"name": "张家豪", "group": "9组"}, {"name": "张嘉阳", "group": "9组"}, {"name": "张晋源", "group": "9组"}, {"name": "张靖成", "group": "9组"}, {"name": "张垲新", "group": "9组"}, {"name": "张绫罗", "group": "9组"}, {"name": "张梦涵", "group": "9组"}, {"name": "张铭源", "group": "9组"}, {"name": "张睿泽", "group": "9组"}, {"name": "张莘苒", "group": "9组"}, {"name": "张文浩", "group": "9组"}, {"name": "张纹嫣", "group": "9组"}, {"name": "张显桐", "group": "9组"}, {"name": "张心玥", "group": "9组"}, {"name": "张芯蕊", "group": "9组"}, {"name": "张昕意", "group": "9组"}, {"name": "张欣妍", "group": "9组"}, {"name": "张雅乔", "group": "9组"}, {"name": "张耀轩", "group": "10组"}, {"name": "张一涵", "group": "10组"}, {"name": "张宇航", "group": "10组"}, {"name": "张雨荞", "group": "10组"}, {"name": "张钰恒", "group": "10组"}, {"name": "张云芊", "group": "10组"}, {"name": "张芸祯", "group": "10组"}, {"name": "张钊源", "group": "10组"}, {"name": "张桢茹", "group": "10组"}, {"name": "张正怡", "group": "10组"}, {"name": "张志展", "group": "10组"}, {"name": "张梓娇", "group": "10组"}, {"name": "张祖语", "group": "10组"}, {"name": "仉辰希", "group": "10组"}, {"name": "赵嘉琪", "group": "10组"}, {"name": "赵嘉欣", "group": "10组"}, {"name": "赵金宇", "group": "10组"}, {"name": "赵可馨", "group": "10组"}, {"name": "赵乐为", "group": "10组"}, {"name": "赵铭琪", "group": "10组"}, {"name": "赵沐杨", "group": "10组"}, {"name": "赵锐", "group": "10组"}, {"name": "赵天意", "group": "10组"}, {"name": "赵鑫瑞", "group": "10组"}, {"name": "赵义杰", "group": "10组"}, {"name": "赵亦可", "group": "10组"}, {"name": "赵语琪", "group": "10组"}, {"name": "赵紫懿", "group": "10组"}, {"name": "柘菀湉", "group": "10组"}, {"name": "郑博文", "group": "10组"}, {"name": "郑杜怡", "group": "10组"}, {"name": "郑涵宇", "group": "10组"}, {"name": "郑嘉毅", "group": "10组"}, {"name": "郑钦文", "group": "10组"}, {"name": "郑上同", "group": "10组"}, {"name": "郑亦然", "group": "10组"}, {"name": "郑智丹", "group": "10组"}, {"name": "钟鹤轩", "group": "10组"}, {"name": "钟芮涵", "group": "10组"}, {"name": "钟嫣羽", "group": "10组"}, {"name": "周董翰", "group": "10组"}, {"name": "周浩宇", "group": "10组"}, {"name": "周菱薇", "group": "10组"}, {"name": "周若歆", "group": "10组"}, {"name": "周兮茉", "group": "10组"}, {"name": "周希霖", "group": "10组"}, {"name": "周欣妍", "group": "10组"}, {"name": "周轩亦", "group": "10组"}, {"name": "周一", "group": "10组"}, {"name": "朱君喆", "group": "10组"}, {"name": "朱骏宁", "group": "10组"}, {"name": "朱玺恺", "group": "10组"}, {"name": "朱馨妍", "group": "10组"}, {"name": "竹紫恬", "group": "10组"}, {"name": "祝子轩", "group": "10组"}, {"name": "邹雨萱", "group": "10组"}];
+
+// ===== Build index: name → [groups] =====
+const nameIndex = new Map();
+STUDENTS.forEach(s => {
+  if (!nameIndex.has(s.name)) nameIndex.set(s.name, []);
+  nameIndex.get(s.name).push(s.group);
+});
+
+// ===== Color mapping for groups =====
+const GROUP_COLORS = {
+  '1组': 'group-c0', '2组': 'group-c1', '3组': 'group-c2',
+  '4组': 'group-c3', '5组': 'group-c4', '6组': 'group-c5',
+  '7组': 'group-c6', '8组': 'group-c7', '9组': 'group-c8',
+  '10组': 'group-c9'
+};
+
+// ===== DOM =====
+const searchInput = document.getElementById('searchInput');
+const searchBtn = document.getElementById('searchBtn');
+const resultArea = document.getElementById('resultArea');
+
+// ===== Search function =====
+function doSearch() {
+  const query = searchInput.value.trim();
+
+  if (!query) {
+    showEmpty();
+    return;
+  }
+
+  // 1. Exact match first
+  if (nameIndex.has(query)) {
+    const groups = nameIndex.get(query);
+    const unique = [...new Set(groups)];
+    if (unique.length === 1) {
+      showResult(query, unique[0]);
+    } else {
+      showMultipleResults(query, unique);
+    }
+    return;
+  }
+
+  // 2. Partial match (contains)
+  const matches = [];
+  for (const [name, groups] of nameIndex) {
+    if (name.includes(query)) {
+      groups.forEach(g => matches.push({name, group: g}));
+    }
+  }
+
+  // Deduplicate by name+group
+  const seen = new Set();
+  const uniqueMatches = [];
+  for (const m of matches) {
+    const key = m.name + '|' + m.group;
+    if (!seen.has(key)) {
+      seen.add(key);
+      uniqueMatches.push(m);
+    }
+  }
+
+  if (uniqueMatches.length === 0) {
+    showNotFound(query);
+  } else if (uniqueMatches.length === 1) {
+    showResult(uniqueMatches[0].name, uniqueMatches[0].group);
+  } else {
+    showMultipleMatches(uniqueMatches);
+  }
+}
+
+function showResult(name, group) {
+  const colorClass = GROUP_COLORS[group] || 'group-c0';
+  resultArea.innerHTML = `
+    <div class="result-item" style="animation: fadeInUp 0.3s ease;">
+      <div class="group-badge ${colorClass}">${group}</div>
+      <div class="info">
+        <div class="name">${escapeHtml(name)}</div>
+        <div class="group-label">报到组别：<strong>${group}</strong></div>
+      </div>
+      <div class="arrow">→</div>
+    </div>
+  `;
+}
+
+function showMultipleResults(name, groups) {
+  const items = groups.map((g, i) => {
+    const colorClass = GROUP_COLORS[g] || 'group-c0';
+    return `
+      <div class="result-item" style="animation: fadeInUp ${0.2 + i * 0.05}s ease both;">
+        <div class="group-badge ${colorClass}">${g}</div>
+        <div class="info">
+          <div class="name">${escapeHtml(name)}</div>
+          <div class="group-label">报到组别：<strong>${g}</strong></div>
+        </div>
+        <div class="arrow">→</div>
+      </div>
+    `;
+  }).join('');
+  resultArea.innerHTML = `
+    <div class="result-count">🔔 该姓名对应 ${groups.length} 条记录（同名不同组）：</div>
+    ${items}
+  `;
+}
+
+function showMultipleMatches(matches) {
+  const items = matches.map((m, i) => {
+    const colorClass = GROUP_COLORS[m.group] || 'group-c0';
+    return `
+      <div class="result-item" style="animation: fadeInUp ${0.2 + i * 0.04}s ease both;">
+        <div class="group-badge ${colorClass}">${m.group}</div>
+        <div class="info">
+          <div class="name">${escapeHtml(m.name)}</div>
+          <div class="group-label">报到组别：<strong>${m.group}</strong></div>
+        </div>
+        <div class="arrow">→</div>
+      </div>
+    `;
+  }).join('');
+  resultArea.innerHTML = `
+    <div class="result-count">🔍 找到 ${matches.length} 条匹配记录：</div>
+    <div style="max-height: 360px; overflow-y: auto;">${items}</div>
+  `;
+}
+
+function showNotFound(query) {
+  resultArea.innerHTML = `
+    <div class="result-not-found" style="animation: fadeInUp 0.3s ease;">
+      <span class="nf-icon">😕</span>
+      <div class="nf-title">未找到"${escapeHtml(query)}"</div>
+      <div class="nf-hint">请检查姓名是否输入正确，或尝试只输入姓氏</div>
+    </div>
+  `;
+}
+
+function showEmpty() {
+  resultArea.innerHTML = `
+    <div class="result-empty">
+      <span class="empty-icon">📋</span>
+      <span class="empty-text">共有 ${STUDENTS.length} 名新生 | 分为 10 个组别</span>
+    </div>
+  `;
+}
+
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function quickSearch(el) {
+  searchInput.value = el.textContent.trim();
+  searchInput.focus();
+  doSearch();
+}
+
+// ===== Event listeners =====
+searchBtn.addEventListener('click', doSearch);
+searchInput.addEventListener('keydown', e => {
+  if (e.key === 'Enter') doSearch();
+});
+// Real-time search as user types
+let debounceTimer;
+searchInput.addEventListener('input', () => {
+  clearTimeout(debounceTimer);
+  debounceTimer = setTimeout(doSearch, 250);
+});
+
+// ===== Animation =====
+const style = document.createElement('style');
+style.textContent = `
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+`;
+document.head.appendChild(style);
+</script>
+
+</body>
+</html>
